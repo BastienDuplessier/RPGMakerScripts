@@ -14,6 +14,9 @@
 #------------------------------------------------------------------------------
 # Version : 1.0 by Zangther
 #     If any questions, contact me at zangther@gmail.com
+#-----------------------------------------------------------------------------
+#       Special thanks to Molok, Raho, Nuki, S4suk3 and Grim from Funkywork
+#         for advises and constant support ! [ http://funkywork.jeun.fr ]
 #==============================================================================
 module Zangther
   module Config
