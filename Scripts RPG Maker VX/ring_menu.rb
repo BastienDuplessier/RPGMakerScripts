@@ -6,21 +6,25 @@
 #                  - Scene_RingMenu
 #                  - Spriteset_Iconring
 #                  - Sprite_Icon
-#          - Configuration is in the module Zangther::Config::RingMenu
-#          - You can change fade_in and fade_out methods, they are into Zangther::Config::RingMenu::Fade
+#          - Configuration is in the module Zangther::RingMenu::Config
+#          - You can change fade_in and fade_out methods, they are into Zangther::RingMenu::Config::Fade
 #          - Some edits to Scene_Map, Scene_Item, Scene_File and Scene_End are made at the end of the file in 
 #               order to make them compatible with this ring menu. 
 #                     (#call_menu for Scene_Map and #return_scene for the others)
 #------------------------------------------------------------------------------
-# Version : 1.0 by Zangther
+# Version : 1.1 by Zangther
 #     If any questions, contact me at zangther@gmail.com
+#-----------------------------------------------------------------------------
+# Changelog :
+#     v 1.0 : Base script
+#     v 1.1 : Cleaning
 #-----------------------------------------------------------------------------
 #       Special thanks to Molok, Raho, Nuki, S4suk3 and Grim from Funkywork
 #         for advises and constant support ! [ http://funkywork.jeun.fr ]
 #==============================================================================
 module Zangther
-  module Config
-    module RingMenu
+  module RingMenu
+    module Config
       # Menus's commands
       MENU_COMMAND = [
       # :name => "Name", :icon => ID, :action => lambda { new scene }
@@ -33,32 +37,55 @@ module Zangther
       START_ANGLE = 1.5 * Math::PI
       # Distance
       DISTANCE = 50
-      
-      module Fade
-        #--------------------------------------------------------------------------
-        # * Fade in
-        #--------------------------------------------------------------------------
-        def fade_in(distance)
-          distance = distance.to_i
-          total_spin
-          dist_step = (distance - @distance) / (6.28 / @step)
-          opa_step = 255 / (6.28 / @step)
-          recede(distance,  dist_step)
-          change_opacity(255, opa_step)
-          @state = :openning
-        end
-        #--------------------------------------------------------------------------
-        # * Fade out
-        #--------------------------------------------------------------------------
-        def fade_out(distance)
-          distance = distance.to_i
-          total_spin
-          dist_step = (distance - @distance) / (6.28 / @step)
-          opa_step = 255 / (6.28 / @step)
-          approach(distance,  dist_step)
-          change_opacity(0, -opa_step)
-          @state = :closing
-        end
+    end
+    #==============================================================================
+    # ** Fade
+    #------------------------------------------------------------------------------
+    #  Contains methods about fade in and fade out for ring menu.
+    #==============================================================================
+    module Fade
+      #--------------------------------------------------------------------------
+      # * Fade in
+      #--------------------------------------------------------------------------
+      def fade_in(distance)
+        distance = distance.to_i
+        total_spin
+        dist_step = (distance - @distance) / (6.28 / @step)
+        opa_step = 255 / (6.28 / @step)
+        recede(distance,  dist_step)
+        change_opacity(255, opa_step)
+        @state = :openning
+      end
+      #--------------------------------------------------------------------------
+      # * Fade out
+      #--------------------------------------------------------------------------
+      def fade_out(distance)
+        distance = distance.to_i
+        total_spin
+        dist_step = (distance - @distance) / (6.28 / @step)
+        opa_step = 255 / (6.28 / @step)
+        approach(distance,  dist_step)
+        change_opacity(0, -opa_step)
+        @state = :closing
+      end
+    end
+    #==============================================================================
+    # ** Icon
+    #------------------------------------------------------------------------------
+    #  Add sevreal methods related to icons
+    #==============================================================================
+    module Icon
+      #--------------------------------------------------------------------------
+      # * Place the sprite
+      #--------------------------------------------------------------------------
+      def place(x, y, distance, angle)
+        # Force values to numeric
+        distance = distance.to_i
+        angle = angle.to_f
+        # Polar coordinations calculation
+        self.x = x.to_i + (Math.cos(angle)*distance)
+        self.y = y.to_i + (Math.sin(angle)*distance)
+        update
       end
     end
   end
@@ -69,7 +96,7 @@ module Zangther
   #==============================================================================
   class Scene_RingMenu < Scene_Base
     #--------------------------------------------------------------------------
-    # * Start processing
+    # * Initialize
     #--------------------------------------------------------------------------
     def initialize(index = 0)
       @index = index.to_i
@@ -113,7 +140,7 @@ module Zangther
     #--------------------------------------------------------------------------
     def create_command_ring
       icons = Array.new
-      Config::RingMenu::MENU_COMMAND.each do |command|
+      RingMenu::Config::MENU_COMMAND.each do |command|
         icons.push(icon = Sprite_Icon.new)
         icon.bitmap = Cache.system("Iconset")
         index = command[:icon]
@@ -123,8 +150,8 @@ module Zangther
       end
       x = $game_player.screen_x - 28
       y = $game_player.screen_y - 44
-      distance = Config::RingMenu::DISTANCE
-      angle = Config::RingMenu::START_ANGLE
+      distance = RingMenu::Config::DISTANCE
+      angle = RingMenu::Config::START_ANGLE
       @command_ring = Spriteset_Iconring.new(x, y, distance, 10, angle, icons, @index)
     end
     #--------------------------------------------------------------------------
@@ -132,7 +159,7 @@ module Zangther
     #--------------------------------------------------------------------------
     def create_command_name
       @command_name = Sprite.new
-      distance = Config::RingMenu::DISTANCE
+      distance = RingMenu::Config::DISTANCE
       width = distance * 2
       @command_name.bitmap = Bitmap.new(width, 24)
       @command_name.x = $game_player.screen_x  - distance
@@ -152,7 +179,7 @@ module Zangther
         @command_ring.spin_right
       elsif Input.trigger?(Input::C)
         Sound.play_decision
-        command = Config::RingMenu::MENU_COMMAND[@command_ring.index]
+        command = RingMenu::Config::MENU_COMMAND[@command_ring.index]
         prepare_scene {command[:action]}
       end
     end
@@ -161,7 +188,7 @@ module Zangther
     #--------------------------------------------------------------------------
     def update_command_name
       rect = @command_name.src_rect
-      command = Config::RingMenu::MENU_COMMAND[@command_ring.index]
+      command = RingMenu::Config::MENU_COMMAND[@command_ring.index]
       bitmap = @command_name.bitmap
       bitmap.clear
       bitmap.draw_text(rect, command[:name], 1)
@@ -189,21 +216,10 @@ module Zangther
   #==============================================================================
   # ** Sprite_Icon
   #------------------------------------------------------------------------------
-  #  Just inherit from Sprite and add a place method for placement
+  #  Just inherit from Sprite and Icon
   #==============================================================================
   class Sprite_Icon < Sprite
-    #--------------------------------------------------------------------------
-    # * Place the sprite
-    #--------------------------------------------------------------------------
-    def place(x, y, distance, angle)
-      # Force values to numeric
-      distance = distance.to_i
-      angle = angle.to_f
-      # Polar coordinations calculation
-      self.x = x.to_i + (Math.cos(angle)*distance)
-      self.y = y.to_i + (Math.sin(angle)*distance)
-      update
-    end 
+    include RingMenu::Icon
   end
   #==============================================================================
   # ** Spriteset_Iconring
@@ -214,7 +230,7 @@ module Zangther
     #--------------------------------------------------------------------------
     # * Module inclusions
     #--------------------------------------------------------------------------
-    include Config::RingMenu::Fade
+    include RingMenu::Fade
     #--------------------------------------------------------------------------
     # * Public Instance Variables
     #--------------------------------------------------------------------------
@@ -235,7 +251,7 @@ module Zangther
     def initialize(x, y, distance, speed, angle, sprites, index = 0, direction=:trigo)
       # Argument test
       sprites = Array(sprites)
-      unless sprites.all? { |sp| (sp.is_a?(Sprite_Icon)) }
+      unless sprites.all? { |sp| (sp.is_a?(RingMenu::Icon)) }
         raise(ArgumentError, "sprite isn't an array of Sprite_Icons") 
       end
       # Adjust numeric arguments
@@ -494,7 +510,7 @@ module Zangther
     def total_spin
         @shift[@direction] += PI_2 unless spinning?
     end
-  end	
+  end 
 end 
 #==============================================================================
 # ** Scene_Map
