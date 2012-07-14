@@ -12,12 +12,13 @@
 #               order to make them compatible with this ring menu. 
 #                     (#call_menu for Scene_Map and #return_scene for the others)
 #------------------------------------------------------------------------------
-# Version : 1.1 by Zangther
+# Version : 1.2 by Zangther
 #     If any questions, contact me at zangther@gmail.com
 #-----------------------------------------------------------------------------
 # Changelog :
-#     v 1.0 : Base script
+#     v 1.2 : Add actor selection for Scene_Skill, Scene_Equip and Scene_Status
 #     v 1.1 : Cleaning
+#     v 1.0 : Base script
 #-----------------------------------------------------------------------------
 #       Special thanks to Molok, Raho, Nuki, S4suk3 and Grim from Funkywork
 #         for advises and constant support ! [ http://funkywork.jeun.fr ]
@@ -28,7 +29,10 @@ module Zangther
       # Menus's commands
       MENU_COMMAND = [
       # :name => "Name", :icon => ID, :action => lambda { new scene }
-        {:name => "Items", :icon => 159, :action => lambda { Scene_Item.new }},
+        {:name => "Items", :icon => 144, :action => lambda { Scene_Item.new }},
+        {:name => "Skills", :icon => 145, :action => lambda { Scene_HeroMenu.new(Scene_Skill, 1) }},
+        {:name => "Equip", :icon => 32, :action => lambda { Scene_HeroMenu.new(Scene_Equip, 2) }},
+        {:name => "Status", :icon => 85, :action => lambda { Scene_HeroMenu.new(Scene_Status, 3) }},
         {:name => "File", :icon => 133, :action => lambda { Scene_File.new(true, false, false) }},
         {:name => "Exit", :icon => 137, :action => lambda { Scene_End.new }}
       ]
@@ -129,8 +133,8 @@ module Zangther
       else
         @command_ring.update
         update_command_name
-        update_command_selection
-      end 
+        update_command_selection unless @command_ring.closing?
+      end
       update_menu_background
     end
     
@@ -171,16 +175,14 @@ module Zangther
     def update_command_selection
       if Input.trigger?(Input::B)
         Sound.play_cancel
-        block = lambda {Scene_Map.new}
-        prepare_scene {block}
+        prepare_scene {return_scene}
       elsif Input.trigger?(Input::LEFT)
         @command_ring.spin_left
       elsif Input.trigger?(Input::RIGHT)
         @command_ring.spin_right
       elsif Input.trigger?(Input::C)
         Sound.play_decision
-        command = RingMenu::Config::MENU_COMMAND[@command_ring.index]
-        prepare_scene {command[:action]}
+        prepare_scene {next_scene}
       end
     end
     #--------------------------------------------------------------------------
@@ -212,6 +214,83 @@ module Zangther
     def change_scene
       $scene = @scene
     end
+    #--------------------------------------------------------------------------
+    # * Load the return scene
+    #--------------------------------------------------------------------------
+    def return_scene
+      lambda {Scene_Map.new}
+    end
+    #--------------------------------------------------------------------------
+    # * Load the next scene
+    #--------------------------------------------------------------------------
+    def next_scene
+      RingMenu::Config::MENU_COMMAND[@command_ring.index][:action]
+    end
+  end
+  #==============================================================================
+  # ** Scene_HeroMenu
+  #------------------------------------------------------------------------------
+  #  Dance like it hurts, Love like you need money, Work when people are watching.
+  #==============================================================================
+  class Scene_HeroMenu < Scene_RingMenu
+    #--------------------------------------------------------------------------
+    # * Initialize
+    #--------------------------------------------------------------------------
+    def initialize(scene, return_index = 0)
+      raise "scene must be a Class object !" unless scene.is_a?(Class)
+      @next_scene = scene
+      @return_index = return_index.to_i
+    end
+    
+    private
+    #--------------------------------------------------------------------------
+    # * Create Command Ring
+    #--------------------------------------------------------------------------
+    def create_command_ring
+      icons = $game_party.members.map do |actor|
+        char = Game_Character.new
+        char.set_graphic(actor.character_name,actor.character_index)
+        Sprite_Character_Icon.new(char)
+      end
+      x = $game_player.screen_x - 16
+      y = $game_player.screen_y - 16
+      distance = RingMenu::Config::DISTANCE
+      angle = RingMenu::Config::START_ANGLE
+      @command_ring = Spriteset_Iconring.new(x, y, distance, 10, angle, icons)
+    end
+    #--------------------------------------------------------------------------
+    # * Create Command Text
+    #--------------------------------------------------------------------------
+    def create_command_name
+      @command_name = Sprite.new
+      distance = RingMenu::Config::DISTANCE
+      width = distance * 2
+      @command_name.bitmap = Bitmap.new(width, 24)
+      @command_name.x = $game_player.screen_x  - distance
+      @command_name.y = $game_player.screen_y + distance
+    end
+    #--------------------------------------------------------------------------
+    # * Update Command Text
+    #--------------------------------------------------------------------------
+    def update_command_name
+      rect = @command_name.src_rect
+      hero = $game_party.members[@command_ring.index]
+      bitmap = @command_name.bitmap
+      bitmap.clear
+      bitmap.draw_text(rect, hero.name, 1)
+    end
+    #--------------------------------------------------------------------------
+    # * Load the return scene
+    #--------------------------------------------------------------------------
+    def return_scene
+      lambda {Scene_RingMenu.new(@return_index)}
+    end
+    #--------------------------------------------------------------------------
+    # * Load the next scene
+    #--------------------------------------------------------------------------
+    def next_scene
+      lambda {@next_scene.new(@command_ring.index)}
+    end
   end
   #==============================================================================
   # ** Sprite_Icon
@@ -220,6 +299,88 @@ module Zangther
   #==============================================================================
   class Sprite_Icon < Sprite
     include RingMenu::Icon
+  end
+  #==============================================================================
+  # ** Sprite_Character_Icon
+  #------------------------------------------------------------------------------
+  #  Just inherit from Sprite_Character and Icon, changes update to prevent placement issues
+  #==============================================================================
+  class Sprite_Character_Icon < Sprite_Icon
+    #--------------------------------------------------------------------------
+    # * Object Initialization
+    #     viewport  : viewport
+    #     character : character (Game_Character)
+    #--------------------------------------------------------------------------
+    def initialize(character = nil)
+      super(nil)
+      @character = character
+      update
+    end
+    #--------------------------------------------------------------------------
+    # * Frame Update
+    #--------------------------------------------------------------------------
+    def update
+      super
+      update_bitmap
+      update_src_rect
+      self.z = @character.screen_z
+    end
+    #--------------------------------------------------------------------------
+    # * Get tile set image that includes the designated tile
+    #     tile_id : Tile ID
+    #--------------------------------------------------------------------------
+    def tileset_bitmap(tile_id)
+      set_number = tile_id / 256
+      return Cache.system("TileB") if set_number == 0
+      return Cache.system("TileC") if set_number == 1
+      return Cache.system("TileD") if set_number == 2
+      return Cache.system("TileE") if set_number == 3
+      return nil
+    end
+    #--------------------------------------------------------------------------
+    # * Update Transfer Origin Bitmap
+    #--------------------------------------------------------------------------
+    def update_bitmap
+      if @tile_id != @character.tile_id or
+         @character_name != @character.character_name or
+         @character_index != @character.character_index
+        @tile_id = @character.tile_id
+        @character_name = @character.character_name
+        @character_index = @character.character_index
+        if @tile_id > 0
+          sx = (@tile_id / 128 % 2 * 8 + @tile_id % 8) * 32;
+          sy = @tile_id % 256 / 8 % 16 * 32;
+          self.bitmap = tileset_bitmap(@tile_id)
+          self.src_rect.set(sx, sy, 32, 32)
+          self.ox = 16
+          self.oy = 32
+        else
+          self.bitmap = Cache.character(@character_name)
+          sign = @character_name[/^[\!\$]./]
+          if sign != nil and sign.include?('$')
+            @cw = bitmap.width / 3
+            @ch = bitmap.height / 4
+          else
+            @cw = bitmap.width / 12
+            @ch = bitmap.height / 8
+          end
+          self.ox = @cw / 2
+          self.oy = @ch
+        end
+      end
+    end
+    #--------------------------------------------------------------------------
+    # * Update Transfer Origin Rectangle
+    #--------------------------------------------------------------------------
+    def update_src_rect
+      if @tile_id == 0
+        index = @character.character_index
+        pattern = @character.pattern < 3 ? @character.pattern : 1
+        sx = (index % 4 * 3 + pattern) * @cw
+        sy = (index / 4 * 4 + (@character.direction - 2) / 2) * @ch
+        self.src_rect.set(sx, sy, @cw, @ch)
+      end
+    end
   end
   #==============================================================================
   # ** Spriteset_Iconring
@@ -421,6 +582,18 @@ module Zangther
     def opened?
       @state == :opened
     end
+    #--------------------------------------------------------------------------
+    # * Is closing ?
+    #--------------------------------------------------------------------------
+    def closing?
+      @state == :closing
+    end
+    #--------------------------------------------------------------------------
+    # * Is openning ?
+    #--------------------------------------------------------------------------
+    def openning?
+      @state == :openning
+    end
 
     private
     #--------------------------------------------------------------------------
@@ -535,15 +708,6 @@ end
 #------------------------------------------------------------------------------
 #  Edits #return_scene
 #==============================================================================
-class Scene_End < Scene_Base
-  #--------------------------------------------------------------------------
-  # * Return to Original Screen
-  #--------------------------------------------------------------------------
-  def return_scene
-    $scene = Zangther::Scene_RingMenu.new(2)
-  end
-end
-
 class Scene_Item < Scene_Base
   #--------------------------------------------------------------------------
   # * Return to Original Screen
@@ -553,6 +717,33 @@ class Scene_Item < Scene_Base
   end
 end
   
+class Scene_Skill < Scene_Base
+  #--------------------------------------------------------------------------
+  # * Return to Original Screen
+  #--------------------------------------------------------------------------
+  def return_scene
+    $scene = Zangther::Scene_RingMenu.new(1)
+  end
+end
+
+class Scene_Equip < Scene_Base
+  #--------------------------------------------------------------------------
+  # * Return to Original Screen
+  #--------------------------------------------------------------------------
+  def return_scene
+    $scene = Zangther::Scene_RingMenu.new(2)
+  end
+end
+
+class Scene_Status < Scene_Base
+  #--------------------------------------------------------------------------
+  # * Return to Original Screen
+  #--------------------------------------------------------------------------
+  def return_scene
+    $scene = Zangther::Scene_RingMenu.new(3)
+  end
+end
+
 class Scene_File < Scene_Base
   #--------------------------------------------------------------------------
   # * Return to Original Screen
@@ -563,7 +754,16 @@ class Scene_File < Scene_Base
     elsif @from_event
       $scene = Scene_Map.new
     else
-      $scene = Zangther::Scene_RingMenu.new(1)
+      $scene = Zangther::Scene_RingMenu.new(4)
     end
+  end
+end
+
+class Scene_End < Scene_Base
+  #--------------------------------------------------------------------------
+  # * Return to Original Screen
+  #--------------------------------------------------------------------------
+  def return_scene
+    $scene = Zangther::Scene_RingMenu.new(5)
   end
 end
