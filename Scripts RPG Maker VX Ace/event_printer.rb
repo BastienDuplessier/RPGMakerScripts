@@ -1,6 +1,8 @@
 #==============================================================================
 #  Event Printer - RPG Maker VXace
 #------------------------------------------------------------------------------
+#  Version 1.2 - 18/05/2013
+#      - Changes to BBcode/HTML (for BilouCorp)
 #  Version 1.1 - 25/04/2013
 #      - Bugfix
 #      - BBcode is now 100% BBcode (Thanks to Joke - Biloucorp)
@@ -1432,7 +1434,7 @@ if $TEST
       # ** Head
       #--------------------------------------------------------------------------
       def head(string_name = "foo")
-        sprintf("[table style='background-color:%s;border:1px solid; width: 800px; padding: 5px;text-shadow:none']%s", 
+        sprintf("[table style='background-color:%s;border:1px solid; padding: 5px;text-shadow:none']%s", 
           EventPrinter::Theme::Nothing, name(string_name))
       end
       #--------------------------------------------------------------------------
@@ -1472,14 +1474,14 @@ if $TEST
       # ** Head
       #--------------------------------------------------------------------------
       def head(string_name = "foo")
-        sprintf("%s<div style='background-color:%s; border: #94a4be 1px solid; width: 800px; padding: 5px;text-shadow:none>",
+        sprintf("%s<div style='background-color:%s; border: #94a4be 1px solid; padding: 5px;text-shadow:none>",
           name(string_name), EventPrinter::Theme::Nothing)
       end
       #--------------------------------------------------------------------------
       # ** Name
       #--------------------------------------------------------------------------
       def name(string)
-        sprintf("<span style='font-weight: bold; width: 800px;padding: 0px'\>%s</span>", string)
+        sprintf("<span style='font-weight: bold; padding: 0px'\>%s</span>", string)
       end
       #--------------------------------------------------------------------------
       # ** Colorization
