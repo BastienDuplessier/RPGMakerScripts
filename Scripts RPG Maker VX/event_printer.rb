@@ -1,6 +1,8 @@
 #==============================================================================
 #  Event Printer - RPG Maker VX
 #------------------------------------------------------------------------------
+#  Version 1.4 - 04/11/2013
+#      - Bugfix on conditions variable - variable. Second variable wasn't the good one
 #  Version 1.3 - 18/05/2013
 #      - Changes to BBcode/HTML (for BilouCorp)
 #  Version 1.2 - 25/04/2013
@@ -946,7 +948,7 @@ if $TEST
           [EventPrinter::Vocab::Variable, EventPrinter::Utilities::variable_name(params[0]), 
             EventPrinter::Vocab::ComparationOperator[params[3]],
             params[1] == 0 ? params[2].to_s : sprintf("%s %s", EventPrinter::Vocab::Variable,
-              EventPrinter::Utilities::variable_name(params[0]))
+              EventPrinter::Utilities::variable_name(params[2]))
           ].join(" ")
         },
         lambda { |params, event|
