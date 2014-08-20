@@ -6,6 +6,10 @@ class Static_Quest
   list :item, :req_items
   skill :req_skill
   actor_type :req_job
+  list :actor_type, :reco_jobs
+  list :actor_type, :forb_jobs
+  integer :duration
+  string :duration_type
   boolean :cancellable  
   
 end
