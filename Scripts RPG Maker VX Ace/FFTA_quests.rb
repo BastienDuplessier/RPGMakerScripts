@@ -43,10 +43,15 @@ module Quest
     req_skill = hash[:req_skill] || nil
     req_job = hash[:req_job] || nil
     cancellable = hash[:cancellable].ptbo
+    reco_jb = hash[:reco_jobs] || []
+    forb_jb = hash[:forb_jobs] || []
+    duration = (hash[:duration] || 0).to_i
+    duration_type = (hash[:duration_type] || :steps).intern
 
     Static_Quest.insert(
-      id, name, desc, gold, exp, cost, repeat, items, weapons, armors, success, fail, 
-      s_m, s_f, verify, endt, confirm, label, success.clone, fail.clone,
-      rank, conditions, req_items, req_skill, req_job, cancellable)
+      id, name, desc, gold, exp, cost, repeat, items, weapons, armors, success, 
+      fail, s_m, s_f, verify, endt, confirm, label, success.clone, fail.clone, 
+      rank, conditions, req_items, req_skill, req_job, rec_jb, forb_jb, duration, 
+      duration_type, cancellable)
   end
 end
