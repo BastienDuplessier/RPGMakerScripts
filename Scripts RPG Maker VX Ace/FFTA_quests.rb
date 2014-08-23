@@ -42,7 +42,7 @@ module Quest
     req_items = hash[:req_items] || []
     req_skill = hash[:req_skill] || nil
     req_job = hash[:req_job] || nil
-    cancellable = hash[:req_job].ptbo
+    cancellable = hash[:cancellable].ptbo
 
     Static_Quest.insert(
       id, name, desc, gold, exp, cost, repeat, items, weapons, armors, success, fail, 
