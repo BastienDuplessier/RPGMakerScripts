@@ -59,3 +59,34 @@ module Quest
       duration_type, cancellable)
   end
 end
+
+class Scene_FFTA_Quest_Shop < Scene_MenuBase
+  #--------------------------------------------------------------------------
+  # * Prepare
+  #--------------------------------------------------------------------------
+  def prepare(zangteam_quests)
+    @quests = zangteam_quests
+  end
+  #--------------------------------------------------------------------------
+  # * Start
+  #--------------------------------------------------------------------------
+  def start
+    super
+    create_quests_list_window
+    create_quest_info_window
+    create_gold_window
+  end
+
+  def create_quests_list_window
+  end
+  
+  def create_quest_info_window
+  end
+  
+  def create_gold_window
+    @gold_window = Window_Gold.new
+    @gold_window.viewport = @viewport
+    @gold_window.x = Graphics.width - @gold_window.width
+    @gold_window.y = Graphics.height - @gold_window.height
+  end
+end
