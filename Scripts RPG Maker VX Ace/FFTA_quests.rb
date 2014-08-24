@@ -55,7 +55,7 @@ module Quest
     Static_Quest.insert(
       id, name, desc, gold, exp, cost, repeat, items, weapons, armors, success, 
       fail, s_m, s_f, verify, endt, confirm, label, success.clone, fail.clone, 
-      rank, conditions, req_items, req_skill, req_job, rec_jb, forb_jb, duration, 
+      rank, conditions, req_items, req_skill, req_job, reco_jb, forb_jb, duration, 
       duration_type, cancellable)
   end
 end
