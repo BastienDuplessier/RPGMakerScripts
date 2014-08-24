@@ -65,7 +65,7 @@ class Scene_FFTA_Quest_Shop < Scene_MenuBase
   # * Prepare
   #--------------------------------------------------------------------------
   def prepare(zangteam_quests)
-    @quests = zangteam_quests
+    @quests = Static_Quest.all.select{|i, q| zangteam_quests.include?(q.id)}.values
   end
   #--------------------------------------------------------------------------
   # * Start
