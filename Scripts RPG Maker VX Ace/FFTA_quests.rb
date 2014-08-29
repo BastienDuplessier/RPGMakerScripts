@@ -62,13 +62,8 @@ end
 
 module FFTA
   class Window_Quests < Window_Selectable
-    def initialize(quests)
-      @quests = quests
-      display_quests
-    end
-
-    def display_quests
-      @quests.each_with_index do |_,i|
+    def draw_quests(quests)
+      quests.each_with_index do |_,i|
         draw_item(i)
       end
     end 
@@ -76,7 +71,7 @@ module FFTA
     # * Draw Item
     #--------------------------------------------------------------------------
     def draw_item(index)
-      quest = @quests[i]
+      quest = @quests[index]
       change_color(normal_color)
       draw_text(item_rect_for_text(index), quest.name, alignment)
     end
