@@ -64,7 +64,7 @@ class Window_QuestBuy
   
   alias nuki_init initialize
   def initialize(x, y, quests)
-    nuki_init(x, y, fitting_height(@quests.size), @quests)
+    nuki_init(x, y, fitting_height(quests.size), quests)
   end
 
   def window_width
