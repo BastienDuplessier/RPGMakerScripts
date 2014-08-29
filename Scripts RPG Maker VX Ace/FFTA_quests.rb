@@ -61,22 +61,6 @@ module Quest
 end
 
 module FFTA
-  class Window_Quests < Window_Selectable
-    def draw_quests(quests)
-      quests.each_with_index do |_,i|
-        draw_item(i)
-      end
-    end 
-    #--------------------------------------------------------------------------
-    # * Draw Item
-    #--------------------------------------------------------------------------
-    def draw_item(index)
-      quest = @quests[index]
-      change_color(normal_color)
-      draw_text(item_rect_for_text(index), quest.name, alignment)
-    end
-  end
-
   class Scene_Quest_Shop < Scene_MenuBase
     #--------------------------------------------------------------------------
     # * Prepare
@@ -95,7 +79,6 @@ module FFTA
     end
 
     def create_quests_list_window
-#      @quests_window = FFTA::Window_Quests.new(@quests)
       @quests_window = Window_QuestBuy.new(0, 100, 100, @quests)
     end
                                            
