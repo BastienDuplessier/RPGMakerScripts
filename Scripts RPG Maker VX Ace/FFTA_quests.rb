@@ -60,34 +60,59 @@ module Quest
   end
 end
 
-class Scene_FFTA_Quest_Shop < Scene_MenuBase
-  #--------------------------------------------------------------------------
-  # * Prepare
-  #--------------------------------------------------------------------------
-  def prepare(zangteam_quests)
-    @quests = Static_Quest.all.select{|i, q| zangteam_quests.include?(q.id)}.values
-  end
-  #--------------------------------------------------------------------------
-  # * Start
-  #--------------------------------------------------------------------------
-  def start
-    super
-    create_quests_list_window
-    create_quest_info_window
-    create_gold_window
+module FFTA
+  class Window_Quests < Window_Selectable
+    def initialize(quests)
+      @quests = quests
+      display_quests
+    end
+
+    def display_quests
+      @quests.each_with_index do |_,i|
+        draw_item(i)
+      end
+    end 
+    #--------------------------------------------------------------------------
+    # * Draw Item
+    #--------------------------------------------------------------------------
+    def draw_item(index)
+      quest = @quests[i]
+      change_color(normal_color)
+      draw_text(item_rect_for_text(index), quest.name, alignment)
+    end
   end
 
-  def create_quests_list_window
-  end
+  class Scene_Quest_Shop < Scene_MenuBase
+    #--------------------------------------------------------------------------
+    # * Prepare
+    #--------------------------------------------------------------------------
+    def prepare(zangteam_quests)
+      @quests = Static_Quest.all.select{|i, q| zangteam_quests.include?(q.id)}.values
+      @quests.each {|q| p q}
+    end
+    #--------------------------------------------------------------------------
+    # * Start
+    #--------------------------------------------------------------------------
+    def start
+      super
+      create_quests_list_window
+      create_quest_info_window
+      create_gold_window
+    end
+
+    def create_quests_list_window
+      @quests_window = FFTA::Window_Quests.new(@quests)
+    end
+                                           
+    def create_quest_info_window
+    end
   
-  def create_quest_info_window
-  end
-  
-  def create_gold_window
-    @gold_window = Window_Gold.new
-    @gold_window.viewport = @viewport
-    @gold_window.x = Graphics.width - @gold_window.width
-    @gold_window.y = Graphics.height - @gold_window.height
+    def create_gold_window
+      @gold_window = Window_Gold.new
+      @gold_window.viewport = @viewport
+      @gold_window.x = Graphics.width - @gold_window.width
+      @gold_window.y = Graphics.height - @gold_window.height
+    end
   end
 end
 
@@ -106,7 +131,7 @@ module SceneManager
     # * Lance un magasin de quête
     #--------------------------------------------------------------------------
     def questShop(ids)
-      call(Scene_FFTA_Quest_Shop)
+      call(FFTA::Scene_Quest_Shop)
       scene.prepare(ids)  
     end
   end
