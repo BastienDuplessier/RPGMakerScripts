@@ -61,6 +61,16 @@ module Quest
 end
 
 class Window_QuestBuy
+  
+  alias nuki_init initialize
+  def initialize(x, y, quests)
+    nuki_init(x, y, fitting_height(@quests.size), @quests)
+  end
+
+  def window_width
+    (Graphics.width * 0.75).round
+  end
+
   #--------------------------------------------------------------------------
   # * Ecrit une quête
   #--------------------------------------------------------------------------
@@ -98,7 +108,7 @@ module FFTA
     end
 
     def create_quests_list_window
-      @quests_window = Window_QuestBuy.new(0, 0, 300, @quests)
+      @quests_window = Window_QuestBuy.new(0, 0, @quests)
     end
                                            
     def create_quest_info_window
