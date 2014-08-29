@@ -88,7 +88,6 @@ module FFTA
     #--------------------------------------------------------------------------
     def prepare(zangteam_quests)
       @quests = Static_Quest.all.select{|i, q| zangteam_quests.include?(q.id)}.values
-      @quests.each {|q| p q}
     end
     #--------------------------------------------------------------------------
     # * Start
