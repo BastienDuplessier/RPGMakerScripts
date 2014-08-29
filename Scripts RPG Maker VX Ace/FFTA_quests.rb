@@ -109,6 +109,9 @@ module FFTA
 
     def create_quests_list_window
       @quests_window = Window_QuestBuy.new(0, 0, @quests)
+      @quests_window.viewport = @viewport
+      @quests_window.x = (Graphics.width  - @quests_window.width) / 2
+      @quests_window.y = (Graphics.height - @quests_window.height) / 2
     end
                                            
     def create_quest_info_window
