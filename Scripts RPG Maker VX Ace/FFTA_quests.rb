@@ -16,8 +16,8 @@ end
 
 module Quest
 
-  FIGHT_ICON = 116
-  DISPATCH_ICON = 234
+  FIGHT = 116
+  DISPATCH = 234
 
   #--------------------------------------------------------------------------
   # * Crée une quête
@@ -57,6 +57,25 @@ module Quest
       fail, s_m, s_f, verify, endt, confirm, label, success.clone, fail.clone, 
       rank, conditions, req_items, req_skill, req_job, reco_jb, forb_jb, duration, 
       duration_type, cancellable)
+  end
+end
+
+class Window_QuestBuy
+  #--------------------------------------------------------------------------
+  # * Ecrit une quête
+  #--------------------------------------------------------------------------
+  def draw_item(index)
+    item = @data[index]
+    rect = item_rect(index)
+    draw_item_icon(item, rect.x, rect.y)
+    draw_item_name(item, rect.x + 24, rect.y, enable?(item))
+    rect.width -= 4
+    draw_text(rect, price(item), 2) if @f
+  end
+
+  def draw_item_icon(item, x, y)
+    icon = Quest.const_get(item.label.to_s.upcase)
+    draw_icon(icon, x, y)
   end
 end
 
