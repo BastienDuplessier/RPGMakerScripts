@@ -95,7 +95,8 @@ module FFTA
     end
 
     def create_quests_list_window
-      @quests_window = FFTA::Window_Quests.new(@quests)
+#      @quests_window = FFTA::Window_Quests.new(@quests)
+      @quests_window = Window_QuestBuy.new(0, 100, 100, @quests)
     end
                                            
     def create_quest_info_window
