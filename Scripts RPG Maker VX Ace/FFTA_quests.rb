@@ -121,6 +121,7 @@ module FFTA
       @quests_window.viewport = @viewport
       @quests_window.x = (Graphics.width  - @quests_window.width) / 2
       @quests_window.y = (Graphics.height - @quests_window.height) / 2
+      @quests_window.set_handler(:cancel,    method(:return_scene))
     end
                                            
     def create_quest_info_windows
