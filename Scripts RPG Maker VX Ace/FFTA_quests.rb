@@ -89,6 +89,15 @@ class Window_QuestBuy
   end
 end
 
+class Window_QuestDesc < Window_Base
+end
+
+class Window_QuestRequired < Window_Base
+end
+
+class Window_QuestReward < Window_Base
+end
+
 module FFTA
   class Scene_Quest_Shop < Scene_MenuBase
     #--------------------------------------------------------------------------
@@ -103,7 +112,7 @@ module FFTA
     def start
       super
       create_quests_list_window
-      create_quest_info_window
+      create_quest_info_windows
       create_gold_window
     end
 
@@ -114,7 +123,10 @@ module FFTA
       @quests_window.y = (Graphics.height - @quests_window.height) / 2
     end
                                            
-    def create_quest_info_window
+    def create_quest_info_windows
+      @desc_window = Window_QuestDesc.new
+      @required_window = Window_QuestRequired.new
+      @reward_window = Window_QuestReward.new
     end
   
     def create_gold_window
