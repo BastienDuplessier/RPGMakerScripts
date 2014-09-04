@@ -111,9 +111,9 @@ module FFTA
     #--------------------------------------------------------------------------
     def start
       super
+      create_gold_window
       create_quests_list_window
       create_quest_info_windows
-      create_gold_window
     end
 
     def create_quests_list_window
@@ -121,6 +121,8 @@ module FFTA
       @quests_window.viewport = @viewport
       @quests_window.x = (Graphics.width  - @quests_window.width) / 2
       @quests_window.y = (Graphics.height - @quests_window.height) / 2
+      @quests_window.activate
+      @quests_window.money = money
       @quests_window.set_handler(:cancel,    method(:return_scene))
     end
                                            
@@ -135,6 +137,12 @@ module FFTA
       @gold_window.viewport = @viewport
       @gold_window.x = Graphics.width - @gold_window.width
       @gold_window.y = Graphics.height - @gold_window.height
+    end
+    #--------------------------------------------------------------------------
+    # * Or
+    #--------------------------------------------------------------------------
+    def money
+      @gold_window.value
     end
   end
 end
