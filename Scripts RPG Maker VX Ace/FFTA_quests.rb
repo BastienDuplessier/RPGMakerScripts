@@ -125,9 +125,9 @@ module FFTA
     end
                                            
     def create_quest_info_windows
-      @desc_window = Window_QuestDesc.new
-      @required_window = Window_QuestRequired.new
-      @reward_window = Window_QuestReward.new
+      @desc_window = Window_QuestDesc.new(0,0,0,0)
+      @required_window = Window_QuestRequired.new(0,0,0,0)
+      @reward_window = Window_QuestReward.new(0,0,0,0)
     end
   
     def create_gold_window
