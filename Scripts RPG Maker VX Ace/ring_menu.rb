@@ -1,4 +1,4 @@
-#==============================================================================
+﻿#==============================================================================
 # ** Ring Menu - RPG Maker VX ACE
 #------------------------------------------------------------------------------
 #  This is a simple ring menu.
@@ -22,7 +22,7 @@
 #     v 1.1   : Cleaning
 #     v 1.0   : Base script
 #-----------------------------------------------------------------------------
-#       Special thanks to Molok, Raho, Nuki, S4suk3 and Grim from Funkywork
+#       Special thanks to Raho, Nuki, S4suk3 and Grim from Funkywork
 #         for advises and constant support ! [ http://funkywork.jeun.fr ]
 #==============================================================================
 module Zangther
