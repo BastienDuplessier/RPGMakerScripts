@@ -29,7 +29,7 @@ module Zangther
       MENU_COMMAND = [
       # {name: "Name", icon: ID, action: -> {Scene}, prepare: -> {SceneManager.scene.prepare(arguments)} }
         {name: "Items", icon: 261, action: -> {Scene_Item}},
-        {name: "Skills", icon: 116, action: lambda {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Skill)} },
+        {name: "Skills", icon: 116, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Skill)} },
         {name: "Equip", icon: 434, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Equip)} },
         {name: "Status", icon: 121, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Status)} },
         {name: "File", icon: 117, action: -> {Scene_Save}},
