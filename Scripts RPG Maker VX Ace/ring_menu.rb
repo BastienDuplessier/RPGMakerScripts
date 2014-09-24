@@ -16,10 +16,7 @@
 #     If any questions, contact me at zangther@gmail.com
 #-----------------------------------------------------------------------------
 # Changelog :
-#     v 1.1.3 : ACE version
-# ---------------------------------------
-#     v 1.2   : Add actor selection for Scene_Skill, Scene_Equip and Scene_Status
-#     v 1.1   : Cleaning
+#     v 1.0.1 : Cleaning
 #     v 1.0   : Base script
 #-----------------------------------------------------------------------------
 #       Special thanks to Raho, Nuki, S4suk3 and Grim from Funkywork
@@ -30,13 +27,13 @@ module Zangther
     module Config
       # Menus's commands
       MENU_COMMAND = [
-      # {name: "Name", icon: ID, action: lambda {Scene}, prepare: lambda {SceneManager.scene.prepare(arguments)} }
-        {name: "Items", icon: 261, action: lambda {Scene_Item}},
-        {name: "Skills", icon: 116, action: lambda {Scene_HeroMenu}, prepare: lambda {SceneManager.scene.prepare(Scene_Skill)} },
-        {name: "Equip", icon: 434, action: lambda {Scene_HeroMenu}, prepare: lambda {SceneManager.scene.prepare(Scene_Equip)} },
-        {name: "Status", icon: 121, action: lambda {Scene_HeroMenu}, prepare: lambda {SceneManager.scene.prepare(Scene_Status)} },
-        {name: "File", icon: 117, action: lambda {Scene_Save}},
-        {name: "Exit", icon: 12, action: lambda {Scene_End}}
+      # {name: "Name", icon: ID, action: -> {Scene}, prepare: -> {SceneManager.scene.prepare(arguments)} }
+        {name: "Items", icon: 261, action: -> {Scene_Item}},
+        {name: "Skills", icon: 116, action: lambda {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Skill)} },
+        {name: "Equip", icon: 434, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Equip)} },
+        {name: "Status", icon: 121, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Status)} },
+        {name: "File", icon: 117, action: -> {Scene_Save}},
+        {name: "Exit", icon: 12, action: -> {Scene_End}}
       ]
       
       # Angle de base
@@ -203,7 +200,7 @@ module Zangther
       @index = @command_ring.index
       command = RingMenu::Config::MENU_COMMAND[@command_ring.index]
       @scene = command[:action].call
-      @prepare = command.fetch(:prepare) { |el| lambda {} }
+      @prepare = command.fetch(:prepare) { |el| -> {} }
       @command_ring.pre_terminate
     end
     #--------------------------------------------------------------------------
