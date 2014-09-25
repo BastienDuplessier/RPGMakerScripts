@@ -712,6 +712,16 @@ module Zangther
         @shift[@direction] += PI_2 unless spinning?
     end
   end
+  #==============================================================================
+  # ** Spriteset_IconCrescent
+  #------------------------------------------------------------------------------
+  #  This class manages Sprite_Icon and place them as a crescent.
+  #==============================================================================
+  class Spritset_IconCrescent
+    def initialize(x, y, icons)
+
+    end
+  end
 end
 
 #==============================================================================
