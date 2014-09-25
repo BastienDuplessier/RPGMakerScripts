@@ -32,6 +32,7 @@ module Zangther
         {name: "Skills", icon: 116, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Skill)} },
         {name: "Equip", icon: 434, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Equip)} },
         {name: "Status", icon: 121, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Status)} },
+        {name: "Formation", icon: 121, action: -> {Scene_HeroFormation}},
         {name: "File", icon: 117, action: -> {Scene_Save}},
         {name: "Exit", icon: 12, action: -> {Scene_End}}
       ]
@@ -289,6 +290,34 @@ module Zangther
       else
         SceneManager.goto(@scene)
       end
+    end
+  end
+  #==============================================================================
+  # ** Scene_HeroFormation
+  #------------------------------------------------------------------------------
+  #  For freedom. 
+  #==============================================================================
+  class Scene_HeroFormation < Scene_MenuBase
+    
+    private
+    #--------------------------------------------------------------------------
+    # * Update Command Selection
+    #--------------------------------------------------------------------------
+    def update_command_selection
+      if Input.trigger?(Input::B)
+        Sound.play_cancel
+        do_return
+      elsif Input.trigger?(Input::LEFT)
+      elsif Input.trigger?(Input::RIGHT)
+      elsif Input.trigger?(Input::C)
+        Sound.play_ok
+      end
+    end
+    #--------------------------------------------------------------------------
+    # * Load the next scene
+    #--------------------------------------------------------------------------
+    def do_return
+      SceneManager.return
     end
   end
   #==============================================================================
