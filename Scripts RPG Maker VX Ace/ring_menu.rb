@@ -236,7 +236,7 @@ module Zangther
       raise "scene must be a Class object !" unless scene.is_a?(Class)
       @scene = scene
     end
-    
+
     private
     #--------------------------------------------------------------------------
     # * Create Command Ring
@@ -713,6 +713,7 @@ module Zangther
     end
   end
 end
+
 #==============================================================================
 # ** Scene_Map
 #------------------------------------------------------------------------------
