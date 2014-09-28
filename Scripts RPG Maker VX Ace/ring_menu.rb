@@ -748,7 +748,7 @@ module Zangther
 
     def refresh
       angle_gap = Math::PI / @sprites.size
-      start_angle = angle_gap / 2
+      start_angle = angle_gap / 2 + Math::PI
       @sprites.each_with_index do |sprite, i|
         angle = start_angle + (angle_gap * i)
         sprite.place(@x,@y,@distance,angle)
