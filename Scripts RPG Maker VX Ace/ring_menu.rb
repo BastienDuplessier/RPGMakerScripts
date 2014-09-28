@@ -299,7 +299,24 @@ module Zangther
   #==============================================================================
   class Scene_HeroFormation < Scene_MenuBase
     
+    def start
+      super
+      create_command_crescent
+    end
+     
     private
+    def create_command_crescent
+      icons = $game_party.members.map do |actor|
+        char = Game_Character.new
+        char.set_graphic(actor.character_name,actor.character_index)
+        Zangther::Sprite_Character_Icon.new(char)
+      end
+      x = $game_player.screen_x
+      y = $game_player.screen_y
+      distance = Zangther::RingMenu::Config::DISTANCE
+      angle = Zangther::RingMenu::Config::START_ANGLE
+      @command_ring = Zangther::Spriteset_IconCrescent.new(x, y, icons)
+    end
     #--------------------------------------------------------------------------
     # * Update Command Selection
     #--------------------------------------------------------------------------
