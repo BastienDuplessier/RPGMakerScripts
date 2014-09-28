@@ -717,9 +717,26 @@ module Zangther
   #------------------------------------------------------------------------------
   #  This class manages Sprite_Icon and place them as a crescent.
   #==============================================================================
-  class Spritset_IconCrescent
-    def initialize(x, y, icons)
+  class Spriteset_IconCrescent
+    def initialize(x, y, sprites)
+      unless sprites.all? { |sp| (sp.is_a?(RingMenu::Icon)) }
+        raise(ArgumentError, "sprite isn't an array of Sprite_Icons") 
+      end
+      @sprites = sprites
+      @distance = RingMenu::Config::DISTANCE
+      @x = x
+      @y = y
+      refresh
+    end
 
+    def refresh
+      angle_gap = Math::PI / @sprites.size
+      start_angle = angle_gap / 2
+      @sprites.each_with_index do |sprite, i|
+        angle = start_angle + (angle_gap * i)
+        sprite.place(@x,@y,@distance,angle)
+        sprite.update
+      end
     end
   end
 end
