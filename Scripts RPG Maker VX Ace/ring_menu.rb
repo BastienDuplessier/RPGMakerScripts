@@ -8,8 +8,8 @@
 #                  - Sprite_Icon
 #          - Configuration is in the module Zangther::RingMenu::Config
 #          - You can change fade_in and fade_out methods, they are into Zangther::RingMenu::Config::Fade
-#          - Some edits to Scene_Map, Scene_Item, Scene_File and Scene_End are made at the end of the file in 
-#               order to make them compatible with this ring menu. 
+#          - Some edits to Scene_Map, Scene_Item, Scene_File and Scene_End are made at the end of the file in
+#               order to make them compatible with this ring menu.
 #                     (#call_menu for Scene_Map and #return_scene for the others)
 #------------------------------------------------------------------------------
 # Version : 1.1.3 by Zangther
@@ -36,7 +36,7 @@ module Zangther
         {name: "File", icon: 117, action: -> {Scene_Save}},
         {name: "Exit", icon: 12, action: -> {Scene_End}}
       ]
-      
+
       # Angle de base
       START_ANGLE = 1.5 * Math::PI
       # Distance
@@ -130,7 +130,7 @@ module Zangther
         update_command_selection unless @command_ring.closing?
       end
     end
-    
+
     private
     #--------------------------------------------------------------------------
     # * Create Command Ring
@@ -278,7 +278,7 @@ module Zangther
     # * Load the next scene
     #--------------------------------------------------------------------------
     def prepare_next_scene
-      $game_party.menu_actor = $game_party.members[@command_ring.index]      
+      $game_party.menu_actor = $game_party.members[@command_ring.index]
       @command_ring.pre_terminate
     end
     #--------------------------------------------------------------------------
@@ -458,7 +458,7 @@ module Zangther
       # Argument test
       sprites = Array(sprites)
       unless sprites.all? { |sp| (sp.is_a?(RingMenu::Icon)) }
-        raise(ArgumentError, "sprite isn't an array of Sprite_Icons") 
+        raise(ArgumentError, "sprite isn't an array of Sprite_Icons")
       end
       # Adjust numeric arguments
       @x = x.to_i + 16
@@ -569,7 +569,7 @@ module Zangther
     def step=(step=1)
       if step == :default
         number_of_icons = @icons.size
-        @step = PI_2 / (number_of_icons*100) * @speed 
+        @step = PI_2 / (number_of_icons*100) * @speed
       else
         @step = step.to_f * @speed
       end
@@ -699,7 +699,7 @@ module Zangther
       end
     end
     #--------------------------------------------------------------------------
-    # * Reverse the direction 
+    # * Reverse the direction
     #--------------------------------------------------------------------------
     def reverse_direction
       @actual_direction = (@actual_direction == :trigo ? :antitrigo : :trigo)
