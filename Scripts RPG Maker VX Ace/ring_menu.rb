@@ -322,6 +322,7 @@ module Zangther
       distance = Zangther::RingMenu::Config::DISTANCE
       angle = Zangther::RingMenu::Config::START_ANGLE
       @command_ring = Zangther::Spriteset_IconCrescent.new(x, y, icons)
+      @command_ring.select(0)
     end
     #--------------------------------------------------------------------------
     # * Update Command Selection
@@ -354,6 +355,10 @@ module Zangther
 
 
   class Game_SChar < Game_Character
+    def initialize
+      @move_speed = 1
+    end
+
     def stand_still
       @step_anime = false
       @pattern = 1
@@ -370,6 +375,7 @@ module Zangther
   #  Just inherit from Sprite_Character and Icon, changes update to prevent placement issues
   #==============================================================================
   class Sprite_Character_Icon < Sprite_Icon
+    attr_reader :character
     #--------------------------------------------------------------------------
     # * Object Initialization
     #     viewport  : viewport
@@ -385,6 +391,7 @@ module Zangther
     #--------------------------------------------------------------------------
     def update
       super
+      @character.update
       update_bitmap
       update_src_rect
       self.z = @character.screen_z
@@ -760,6 +767,10 @@ module Zangther
         update_position(sprite, i)
         sprite.update
       end
+    end
+
+    def select(id)
+      @sprites[id].character.walk
     end
 
     def update_position(sprite, i)
