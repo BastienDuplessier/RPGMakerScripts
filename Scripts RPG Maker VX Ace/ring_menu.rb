@@ -322,7 +322,6 @@ module Zangther
       distance = Zangther::RingMenu::Config::DISTANCE
       angle = Zangther::RingMenu::Config::START_ANGLE
       @command_ring = Zangther::Spriteset_IconCrescent.new(x, y, icons)
-      @command_ring.select(0)
     end
     #--------------------------------------------------------------------------
     # * Update Command Selection
@@ -356,6 +355,7 @@ module Zangther
 
   class Game_SChar < Game_Character
     def initialize
+      super
       @move_speed = 1
     end
 
@@ -759,6 +759,8 @@ module Zangther
       @distance = RingMenu::Config::DISTANCE
       @x = x
       @y = y
+      @index = 0
+      select(0)
       update
     end
 
@@ -769,8 +771,21 @@ module Zangther
       end
     end
 
-    def select(id)
-      @sprites[id].character.walk
+    def select_next
+      @index = (@index + 1) % @sprites.size
+      select(@index)
+    end
+
+    def select_previous
+      @index -= 1
+      @index = 0 if @index == @sprites.size
+      select(@index)
+    end
+
+    private
+
+    def select(index)
+      @sprites[index].character.walk
     end
 
     def update_position(sprite, i)
