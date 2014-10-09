@@ -304,6 +304,11 @@ module Zangther
       create_command_crescent
     end
 
+    def update
+      super
+      @command_ring.update
+    end
+
     private
     def create_command_crescent
       icons = $game_party.members.map do |actor|
