@@ -346,6 +346,18 @@ module Zangther
     include RingMenu::Icon
   end
 
+
+  class Game_SChar < Game_Character
+    def stand_still
+      @step_anime = false
+      @pattern = 1
+    end
+
+    def walk
+      @step_anime = true
+    end
+  end
+
   #==============================================================================
   # ** Sprite_Character_Icon
   #------------------------------------------------------------------------------
