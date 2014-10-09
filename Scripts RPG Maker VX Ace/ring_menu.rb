@@ -302,6 +302,7 @@ module Zangther
     def start
       super
       create_command_crescent
+      @chosing = false
     end
 
     def update
@@ -336,6 +337,12 @@ module Zangther
         @command_ring.move_right
       elsif Input.trigger?(Input::C)
         Sound.play_ok
+        if @chosing
+          @command_ring.unchose
+        else
+          @command_ring.chose
+        end
+        @chosing = !@chosing
       end
     end
     #--------------------------------------------------------------------------
@@ -784,6 +791,19 @@ module Zangther
       @index -= 1
       @index = 0 if @index == @sprites.size
       select(@index)
+    end
+
+    def chose
+      half = @sprites.size / 2
+      if @index + 1 > half
+        @sprites[@index].character.turn_right_90
+      else
+        @sprites[@index].character.turn_left_90
+      end
+    end
+
+    def unchose
+      @sprites[@index].character.set_direction(2)
     end
 
     private
