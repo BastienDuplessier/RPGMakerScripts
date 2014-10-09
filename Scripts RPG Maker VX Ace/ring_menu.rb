@@ -740,23 +740,27 @@ module Zangther
   class Spriteset_IconCrescent
     def initialize(x, y, sprites)
       unless sprites.all? { |sp| (sp.is_a?(RingMenu::Icon)) }
-        raise(ArgumentError, "sprite isn't an array of Sprite_Icons") 
+        raise(ArgumentError, "sprite isn't an array of Sprite_Icons")
       end
       @sprites = sprites
       @distance = RingMenu::Config::DISTANCE
       @x = x
       @y = y
-      refresh
+      update
     end
 
-    def refresh
-      angle_gap = Math::PI / @sprites.size
-      start_angle = angle_gap / 2 + Math::PI
+    def update
       @sprites.each_with_index do |sprite, i|
-        angle = start_angle + (angle_gap * i)
-        sprite.place(@x,@y,@distance,angle)
+        update_position(sprite, i)
         sprite.update
       end
+    end
+
+    def update_position(sprite, i)
+      angle_gap = Math::PI / @sprites.size
+      start_angle = angle_gap / 2 + Math::PI
+      angle = start_angle + (angle_gap * i)
+      sprite.place(@x,@y,@distance,angle)
     end
   end
 end
