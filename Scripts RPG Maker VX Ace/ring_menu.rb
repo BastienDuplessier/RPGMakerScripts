@@ -245,7 +245,7 @@ module Zangther
       icons = $game_party.members.map do |actor|
         char = Game_Character.new
         char.set_graphic(actor.character_name,actor.character_index)
-        Sprite_Character_Icon.new(char)
+        Sprite_Character_Icon.new(@viewport, char)
       end
       x = $game_player.screen_x - 16
       y = $game_player.screen_y - 16
@@ -295,21 +295,21 @@ module Zangther
   #==============================================================================
   # ** Scene_HeroFormation
   #------------------------------------------------------------------------------
-  #  For freedom. 
+  #  For freedom.
   #==============================================================================
   class Scene_HeroFormation < Scene_MenuBase
-    
+
     def start
       super
       create_command_crescent
     end
-     
+
     private
     def create_command_crescent
       icons = $game_party.members.map do |actor|
         char = Game_Character.new
         char.set_graphic(actor.character_name,actor.character_index)
-        Zangther::Sprite_Character_Icon.new(char)
+        Zangther::Sprite_Character_Icon.new(@viewport, char)
       end
       x = $game_player.screen_x
       y = $game_player.screen_y
@@ -356,8 +356,8 @@ module Zangther
     #     viewport  : viewport
     #     character : character (Game_Character)
     #--------------------------------------------------------------------------
-    def initialize(character = nil)
-      super(nil)
+    def initialize(viewport, character = nil)
+      super(viewport)
       @character = character
       update
     end
