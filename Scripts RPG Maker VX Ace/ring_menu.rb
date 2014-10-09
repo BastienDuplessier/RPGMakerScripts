@@ -331,7 +331,9 @@ module Zangther
         Sound.play_cancel
         do_return
       elsif Input.trigger?(Input::LEFT)
+        @command_ring.move_left
       elsif Input.trigger?(Input::RIGHT)
+        @command_ring.move_right
       elsif Input.trigger?(Input::C)
         Sound.play_ok
       end
@@ -771,12 +773,14 @@ module Zangther
       end
     end
 
-    def select_next
+    def move_right
+      unselect
       @index = (@index + 1) % @sprites.size
       select(@index)
     end
 
-    def select_previous
+    def move_left
+      unselect
       @index -= 1
       @index = 0 if @index == @sprites.size
       select(@index)
@@ -786,6 +790,10 @@ module Zangther
 
     def select(index)
       @sprites[index].character.walk
+    end
+
+    def unselect
+      @sprites[@index].character.stand_still
     end
 
     def update_position(sprite, i)
