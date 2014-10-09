@@ -383,61 +383,50 @@ module Zangther
       update_src_rect
       self.z = @character.screen_z
     end
-    #--------------------------------------------------------------------------
-    # * Get tile set image that includes the designated tile
-    #     tile_id : Tile ID
-    #--------------------------------------------------------------------------
-    def tileset_bitmap(tile_id)
-      set_number = tile_id / 256
-      return Cache.system("TileB") if set_number == 0
-      return Cache.system("TileC") if set_number == 1
-      return Cache.system("TileD") if set_number == 2
-      return Cache.system("TileE") if set_number == 3
-      return nil
-    end
+
+    private
     #--------------------------------------------------------------------------
     # * Update Transfer Origin Bitmap
     #--------------------------------------------------------------------------
     def update_bitmap
-      if @tile_id != @character.tile_id or
-         @character_name != @character.character_name or
-         @character_index != @character.character_index
-        @tile_id = @character.tile_id
+      if graphic_changed?
         @character_name = @character.character_name
         @character_index = @character.character_index
-        if @tile_id > 0
-          sx = (@tile_id / 128 % 2 * 8 + @tile_id % 8) * 32;
-          sy = @tile_id % 256 / 8 % 16 * 32;
-          self.bitmap = tileset_bitmap(@tile_id)
-          self.src_rect.set(sx, sy, 32, 32)
-          self.ox = 16
-          self.oy = 32
-        else
-          self.bitmap = Cache.character(@character_name)
-          sign = @character_name[/^[\!\$]./]
-          if sign != nil and sign.include?('$')
-            @cw = bitmap.width / 3
-            @ch = bitmap.height / 4
-          else
-            @cw = bitmap.width / 12
-            @ch = bitmap.height / 8
-          end
-          self.ox = @cw / 2
-          self.oy = @ch
-        end
+        set_character_bitmap
       end
+    end
+    #--------------------------------------------------------------------------
+    # * Determine if Graphic Changed
+    #--------------------------------------------------------------------------
+    def graphic_changed?
+      @character_name != @character.character_name ||
+        @character_index != @character.character_index
+    end
+    #--------------------------------------------------------------------------
+    # * Set Character Bitmap
+    #--------------------------------------------------------------------------
+    def set_character_bitmap
+      self.bitmap = Cache.character(@character_name)
+      sign = @character_name[/^[\!\$]./]
+      if sign && sign.include?('$')
+        @cw = bitmap.width / 3
+        @ch = bitmap.height / 4
+      else
+        @cw = bitmap.width / 12
+        @ch = bitmap.height / 8
+      end
+      self.ox = @cw / 2
+      self.oy = @ch
     end
     #--------------------------------------------------------------------------
     # * Update Transfer Origin Rectangle
     #--------------------------------------------------------------------------
     def update_src_rect
-      if @tile_id == 0
-        index = @character.character_index
-        pattern = @character.pattern < 3 ? @character.pattern : 1
-        sx = (index % 4 * 3 + pattern) * @cw
-        sy = (index / 4 * 4 + (@character.direction - 2) / 2) * @ch
-        self.src_rect.set(sx, sy, @cw, @ch)
-      end
+      index = @character.character_index
+      pattern = @character.pattern < 3 ? @character.pattern : 1
+      sx = (index % 4 * 3 + pattern) * @cw
+      sy = (index / 4 * 4 + (@character.direction - 2) / 2) * @ch
+      self.src_rect.set(sx, sy, @cw, @ch)
     end
   end
   #==============================================================================
