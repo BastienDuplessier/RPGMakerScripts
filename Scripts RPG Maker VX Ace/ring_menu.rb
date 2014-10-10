@@ -799,8 +799,10 @@ module Zangther
     def move(direction)
       unselect
       case direction
-      when :right then increment_index
-      when :left then decrement_index
+      when :right
+        increment_index
+      when :left
+        decrement_index
       end
       select(@index)
     end
