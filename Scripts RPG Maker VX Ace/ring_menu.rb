@@ -782,14 +782,13 @@ module Zangther
 
     def move_right
       unselect
-      @index = (@index + 1) % @sprites.size
+      increment_index
       select(@index)
     end
 
     def move_left
       unselect
-      @index -= 1
-      @index = 0 if @index == @sprites.size
+      decrement_index
       select(@index)
     end
 
@@ -822,6 +821,16 @@ module Zangther
       angle = start_angle + (angle_gap * i)
       sprite.place(@x,@y,@distance,angle)
     end
+
+    def increment_index
+      @index = (@index + 1) % @sprites.size
+    end
+
+    def decrement_index
+      @index -= 1
+      @index = 0 if @index == @sprites.size
+    end
+
   end
 end
 
