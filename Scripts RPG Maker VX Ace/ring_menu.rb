@@ -810,9 +810,9 @@ module Zangther
     def chose
       half = @sprites.size / 2
       if @index + 1 > half
-        @sprites[@index].character.turn_right_90
+        @sprites[@index].character.set_direction(4) # Face left
       else
-        @sprites[@index].character.turn_left_90
+        @sprites[@index].character.set_direction(6) # Face right
       end
     end
 
