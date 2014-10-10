@@ -332,9 +332,9 @@ module Zangther
         Sound.play_cancel
         do_return
       elsif Input.trigger?(Input::LEFT)
-        @command_ring.move_left
+        update_selection(:left)
       elsif Input.trigger?(Input::RIGHT)
-        @command_ring.move_right
+        update_selection(:right)
       elsif Input.trigger?(Input::C)
         Sound.play_ok
         if @chosing
@@ -350,6 +350,22 @@ module Zangther
     #--------------------------------------------------------------------------
     def do_return
       SceneManager.return
+    end
+
+    private
+
+    def update_selection(direction)
+      if @chosing
+        if @command_ring.can_switch?(direction)
+          Sound.play_escape
+          @command_ring.switch(direction)
+        else
+          Sound.play_buzzer
+        end
+      else
+        Sound.play_cursor
+        @command_ring.move(direction)
+      end
     end
   end
   #==============================================================================
@@ -780,15 +796,12 @@ module Zangther
       end
     end
 
-    def move_right
+    def move(direction)
       unselect
-      increment_index
-      select(@index)
-    end
-
-    def move_left
-      unselect
-      decrement_index
+      case direction
+      when :right then increment_index
+      when :left then decrement_index
+      end
       select(@index)
     end
 
@@ -804,6 +817,26 @@ module Zangther
     def unchose
       @sprites[@index].character.set_direction(2)
     end
+
+    def can_switch?(direction)
+      case direction
+      when :right
+        can_switch_right?
+      when :left
+        can_switch_left?
+      end
+    end
+
+    def switch(direction)
+      case direction
+      when :right
+        switch_right
+      when :left
+        switch_left
+      end
+    end
+
+    private
 
     def can_switch_right?
       @index < @sprites.size
@@ -824,8 +857,6 @@ module Zangther
       @sprites[@index-1], @sprites[@index] = @sprites[@index], @sprites[@index-1]
       decrement_index
     end
-
-    private
 
     def animated_switch(sprite_left, sprite_right)
     end
