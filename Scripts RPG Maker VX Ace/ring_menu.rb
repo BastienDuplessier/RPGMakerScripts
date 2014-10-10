@@ -307,8 +307,8 @@ module Zangther
 
     def update
       super
-      @command_ring.update
       update_command_selection
+      @command_ring.update
     end
 
     private
