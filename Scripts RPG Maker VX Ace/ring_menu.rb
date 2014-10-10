@@ -836,6 +836,7 @@ module Zangther
       when :left
         switch_left
       end
+      chose
     end
 
     private
