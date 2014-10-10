@@ -842,7 +842,7 @@ module Zangther
     private
 
     def can_switch_right?
-      @index < @sprites.size
+      @index < @sprites.size - 1
     end
 
     def can_switch_left?
