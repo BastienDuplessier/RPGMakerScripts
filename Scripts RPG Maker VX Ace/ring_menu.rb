@@ -805,7 +805,30 @@ module Zangther
       @sprites[@index].character.set_direction(2)
     end
 
+    def can_switch_right?
+      @index < @sprites.size
+    end
+
+    def can_switch_left?
+      @index != 0
+    end
+
+    def switch_right
+      animated_switch(@sprites[@index], @sprites[@index+1])
+      @sprites[@index], @sprites[@index+1] = @sprites[@index+1], @sprites[@index]
+      increment_index
+    end
+
+    def switch_left
+      animated_switch(@sprites[@index-1], @sprites[@index])
+      @sprites[@index-1], @sprites[@index] = @sprites[@index], @sprites[@index-1]
+      decrement_index
+    end
+
     private
+
+    def animated_switch(sprite_left, sprite_right)
+    end
 
     def select(index)
       @sprites[index].character.walk
