@@ -359,6 +359,8 @@ module Zangther
         if @command_ring.can_switch?(direction)
           Sound.play_escape
           @command_ring.switch(direction)
+          $game_party.swap_order(@command_ring.index,
+                                  @command_ring.pending_index)
         else
           Sound.play_buzzer
         end
@@ -776,6 +778,10 @@ module Zangther
   #  This class manages Sprite_Icon and place them as a crescent.
   #==============================================================================
   class Spriteset_IconCrescent
+
+    attr_reader :index
+    attr_reader :pending_index
+
     def initialize(x, y, sprites)
       unless sprites.all? { |sp| (sp.is_a?(RingMenu::Icon)) }
         raise(ArgumentError, "sprite isn't an array of Sprite_Icons")
@@ -785,6 +791,7 @@ module Zangther
       @x = x
       @y = y
       @index = 0
+      @pending_index = 0
       select(0)
       update
     end
@@ -832,8 +839,10 @@ module Zangther
     def switch(direction)
       case direction
       when :right
+        @pending_index = @index
         switch_right
       when :left
+        @pending_index = @index
         switch_left
       end
       chose
