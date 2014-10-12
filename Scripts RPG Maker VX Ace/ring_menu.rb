@@ -356,9 +356,9 @@ module Zangther
 
     def update_selection(direction)
       if @chosing
-        if @command_ring.can_switch?(direction)
+        if @command_ring.can_swap?(direction)
           Sound.play_escape
-          @command_ring.switch(direction)
+          @command_ring.swap(direction)
           $game_party.swap_order(@command_ring.index,
                                   @command_ring.pending_index)
         else
@@ -827,50 +827,50 @@ module Zangther
       @sprites[@index].character.set_direction(2)
     end
 
-    def can_switch?(direction)
+    def can_swap?(direction)
       case direction
       when :right
-        can_switch_right?
+        can_swap_right?
       when :left
-        can_switch_left?
+        can_swap_left?
       end
     end
 
-    def switch(direction)
+    def swap(direction)
       case direction
       when :right
         @pending_index = @index
-        switch_right
+        swap_right
       when :left
         @pending_index = @index
-        switch_left
+        swap_left
       end
       chose
     end
 
     private
 
-    def can_switch_right?
+    def can_swap_right?
       @index < @sprites.size - 1
     end
 
-    def can_switch_left?
+    def can_swap_left?
       @index != 0
     end
 
-    def switch_right
-      animated_switch(@sprites[@index], @sprites[@index+1])
+    def swap_right
+      animated_swap(@sprites[@index], @sprites[@index+1])
       @sprites[@index], @sprites[@index+1] = @sprites[@index+1], @sprites[@index]
       increment_index
     end
 
-    def switch_left
-      animated_switch(@sprites[@index-1], @sprites[@index])
+    def swap_left
+      animated_swap(@sprites[@index-1], @sprites[@index])
       @sprites[@index-1], @sprites[@index] = @sprites[@index], @sprites[@index-1]
       decrement_index
     end
 
-    def animated_switch(sprite_left, sprite_right)
+    def animated_swap(sprite_left, sprite_right)
     end
 
     def select(index)
