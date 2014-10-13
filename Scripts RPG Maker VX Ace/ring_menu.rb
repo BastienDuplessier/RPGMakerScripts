@@ -94,283 +94,6 @@ module Zangther
     end
   end
   #==============================================================================
-  # ** Scene_RingMenu
-  #------------------------------------------------------------------------------
-  #  This scene used to be an adventurer like you, but then it took an arrow in the knee.
-  #==============================================================================
-  class Scene_RingMenu < Scene_MenuBase
-    #--------------------------------------------------------------------------
-    # * Start processing
-    #--------------------------------------------------------------------------
-    def start
-      super
-      create_background
-        create_command_ring
-      create_command_name
-    end
-    #--------------------------------------------------------------------------
-    # * Termination Processing
-    #--------------------------------------------------------------------------
-    def terminate
-      super
-      dispose_background
-      dispose_command_name
-    end
-    #--------------------------------------------------------------------------
-    # * Frame Update
-    #--------------------------------------------------------------------------
-    def update
-      super
-      if @command_ring.closed?
-        @command_ring.dispose
-        change_scene
-      else
-        @command_ring.update
-        update_command_name
-        update_command_selection unless @command_ring.closing?
-      end
-    end
-
-    private
-    #--------------------------------------------------------------------------
-    # * Create Command Ring
-    #--------------------------------------------------------------------------
-    def create_command_ring
-      icons = Array.new
-      RingMenu::Config::MENU_COMMAND.each do |command|
-        icons.push(icon = Sprite_Icon.new)
-        icon.bitmap = Cache.system("Iconset")
-        index = command[:icon]
-        x = index % 16 * 24
-        y = (index / 16).truncate * 24
-        icon.src_rect = Rect.new(x,y,24,24)
-      end
-      x = $game_player.screen_x - 28
-      y = $game_player.screen_y - 44
-      distance = RingMenu::Config::DISTANCE
-      angle = RingMenu::Config::START_ANGLE
-      @command_ring = Spriteset_Iconring.new(x, y, distance, 10, angle, icons, @index)
-    end
-    #--------------------------------------------------------------------------
-    # * Create Command Text
-    #--------------------------------------------------------------------------
-    def create_command_name
-      @command_name = Sprite.new
-      distance = RingMenu::Config::DISTANCE
-      width = distance * 2
-      @command_name.bitmap = Bitmap.new(width, 24)
-      @command_name.x = $game_player.screen_x  - distance
-      @command_name.y = $game_player.screen_y + distance
-    end
-    #--------------------------------------------------------------------------
-    # * Update Command Selection
-    #--------------------------------------------------------------------------
-    def update_command_selection
-      if Input.trigger?(Input::B)
-        Sound.play_cancel
-        do_return
-      elsif Input.trigger?(Input::LEFT)
-        @command_ring.spin_left
-      elsif Input.trigger?(Input::RIGHT)
-        @command_ring.spin_right
-      elsif Input.trigger?(Input::C)
-        Sound.play_ok
-        prepare_next_scene
-      end
-    end
-    #--------------------------------------------------------------------------
-    # * Update Command Text
-    #--------------------------------------------------------------------------
-    def update_command_name
-      rect = @command_name.src_rect
-      command = RingMenu::Config::MENU_COMMAND[@command_ring.index]
-      bitmap = @command_name.bitmap
-      bitmap.clear
-      bitmap.draw_text(rect, command[:name], 1)
-    end
-    #--------------------------------------------------------------------------
-    # * Dispose Command Text
-    #--------------------------------------------------------------------------
-    def dispose_command_name
-      @command_name.dispose
-    end
-    #--------------------------------------------------------------------------
-    # * Prepare transition for new scene
-    #--------------------------------------------------------------------------
-    def prepare_next_scene
-      @index = @command_ring.index
-      command = RingMenu::Config::MENU_COMMAND[@command_ring.index]
-      @scene = command[:action].call
-      @prepare = command.fetch(:prepare) { |el| -> {} }
-      @command_ring.pre_terminate
-    end
-    #--------------------------------------------------------------------------
-    # * Execute transition to new scene
-    #--------------------------------------------------------------------------
-    def change_scene
-      if @scene == :none
-        SceneManager.return
-      else
-        SceneManager.call(@scene)
-        @prepare.call
-      end
-    end
-    #--------------------------------------------------------------------------
-    # * Load the next scene
-    #--------------------------------------------------------------------------
-    def do_return
-      @scene = :none
-      @command_ring.pre_terminate
-    end
-  end
-  #==============================================================================
-  # ** Scene_HeroMenu
-  #------------------------------------------------------------------------------
-  #  Dance like it hurts, Love like you need money, Work when people are watching.
-  #==============================================================================
-  class Scene_HeroMenu < Scene_RingMenu
-    #--------------------------------------------------------------------------
-    # * Initialize
-    #--------------------------------------------------------------------------
-    def prepare(scene)
-      raise "scene must be a Class object !" unless scene.is_a?(Class)
-      @scene = scene
-    end
-
-    private
-    #--------------------------------------------------------------------------
-    # * Create Command Ring
-    #--------------------------------------------------------------------------
-    def create_command_ring
-      icons = $game_party.members.map do |actor|
-        char = Game_Character.new
-        char.set_graphic(actor.character_name,actor.character_index)
-        Sprite_Character_Icon.new(@viewport, char)
-      end
-      x = $game_player.screen_x - 16
-      y = $game_player.screen_y - 16
-      distance = RingMenu::Config::DISTANCE
-      angle = RingMenu::Config::START_ANGLE
-      @command_ring = Spriteset_Iconring.new(x, y, distance, 10, angle, icons)
-    end
-    #--------------------------------------------------------------------------
-    # * Create Command Text
-    #--------------------------------------------------------------------------
-    def create_command_name
-      @command_name = Sprite.new
-      distance = RingMenu::Config::DISTANCE
-      width = distance * 2
-      @command_name.bitmap = Bitmap.new(width, 24)
-      @command_name.x = $game_player.screen_x  - distance
-      @command_name.y = $game_player.screen_y + distance
-    end
-    #--------------------------------------------------------------------------
-    # * Update Command Text
-    #--------------------------------------------------------------------------
-    def update_command_name
-      rect = @command_name.src_rect
-      hero = $game_party.members[@command_ring.index]
-      bitmap = @command_name.bitmap
-      bitmap.clear
-      bitmap.draw_text(rect, hero.name, 1)
-    end
-    #--------------------------------------------------------------------------
-    # * Load the next scene
-    #--------------------------------------------------------------------------
-    def prepare_next_scene
-      $game_party.menu_actor = $game_party.members[@command_ring.index]
-      @command_ring.pre_terminate
-    end
-    #--------------------------------------------------------------------------
-    # * Execute transition to new scene
-    #--------------------------------------------------------------------------
-    def change_scene
-      if @scene == :none
-        SceneManager.return
-      else
-        SceneManager.goto(@scene)
-      end
-    end
-  end
-  #==============================================================================
-  # ** Scene_HeroFormation
-  #------------------------------------------------------------------------------
-  #  For freedom.
-  #==============================================================================
-  class Scene_HeroFormation < Scene_MenuBase
-
-    def start
-      super
-      create_command_crescent
-      @chosing = false
-    end
-
-    def update
-      super
-      update_command_selection
-      @command_ring.update
-    end
-
-    private
-    def create_command_crescent
-      icons = $game_party.members.map do |actor|
-        char = Game_SChar.new
-        char.set_graphic(actor.character_name,actor.character_index)
-        Zangther::Sprite_Character_Icon.new(@viewport, char)
-      end
-      x = $game_player.screen_x
-      y = $game_player.screen_y
-      distance = Zangther::RingMenu::Config::DISTANCE
-      angle = Zangther::RingMenu::Config::START_ANGLE
-      @command_ring = Zangther::Spriteset_IconCrescent.new(x, y, icons)
-    end
-    #--------------------------------------------------------------------------
-    # * Update Command Selection
-    #--------------------------------------------------------------------------
-    def update_command_selection
-      if Input.trigger?(Input::B)
-        Sound.play_cancel
-        do_return
-      elsif Input.trigger?(Input::LEFT)
-        update_selection(:left)
-      elsif Input.trigger?(Input::RIGHT)
-        update_selection(:right)
-      elsif Input.trigger?(Input::C)
-        Sound.play_ok
-        if @chosing
-          @command_ring.unchose
-        else
-          @command_ring.chose
-        end
-        @chosing = !@chosing
-      end
-    end
-    #--------------------------------------------------------------------------
-    # * Load the next scene
-    #--------------------------------------------------------------------------
-    def do_return
-      SceneManager.return
-    end
-
-    private
-
-    def update_selection(direction)
-      if @chosing
-        if @command_ring.can_swap?(direction)
-          Sound.play_escape
-          @command_ring.swap(direction)
-          $game_party.swap_order(@command_ring.index,
-                                  @command_ring.pending_index)
-        else
-          Sound.play_buzzer
-        end
-      else
-        Sound.play_cursor
-        @command_ring.move(direction)
-      end
-    end
-  end
-  #==============================================================================
   # ** Sprite_Icon
   #------------------------------------------------------------------------------
   #  Just inherit from Sprite and Icon
@@ -898,8 +621,285 @@ module Zangther
     end
 
   end
-end
 
+  #==============================================================================
+  # ** Scene_RingMenu
+  #------------------------------------------------------------------------------
+  #  This scene used to be an adventurer like you, but then it took an arrow in the knee.
+  #==============================================================================
+  class Scene_RingMenu < Scene_MenuBase
+    #--------------------------------------------------------------------------
+    # * Start processing
+    #--------------------------------------------------------------------------
+    def start
+      super
+      create_background
+        create_command_ring
+      create_command_name
+    end
+    #--------------------------------------------------------------------------
+    # * Termination Processing
+    #--------------------------------------------------------------------------
+    def terminate
+      super
+      dispose_background
+      dispose_command_name
+    end
+    #--------------------------------------------------------------------------
+    # * Frame Update
+    #--------------------------------------------------------------------------
+    def update
+      super
+      if @command_ring.closed?
+        @command_ring.dispose
+        change_scene
+      else
+        @command_ring.update
+        update_command_name
+        update_command_selection unless @command_ring.closing?
+      end
+    end
+
+    private
+    #--------------------------------------------------------------------------
+    # * Create Command Ring
+    #--------------------------------------------------------------------------
+    def create_command_ring
+      icons = Array.new
+      RingMenu::Config::MENU_COMMAND.each do |command|
+        icons.push(icon = Sprite_Icon.new)
+        icon.bitmap = Cache.system("Iconset")
+        index = command[:icon]
+        x = index % 16 * 24
+        y = (index / 16).truncate * 24
+        icon.src_rect = Rect.new(x,y,24,24)
+      end
+      x = $game_player.screen_x - 28
+      y = $game_player.screen_y - 44
+      distance = RingMenu::Config::DISTANCE
+      angle = RingMenu::Config::START_ANGLE
+      @command_ring = Spriteset_Iconring.new(x, y, distance, 10, angle, icons, @index)
+    end
+    #--------------------------------------------------------------------------
+    # * Create Command Text
+    #--------------------------------------------------------------------------
+    def create_command_name
+      @command_name = Sprite.new
+      distance = RingMenu::Config::DISTANCE
+      width = distance * 2
+      @command_name.bitmap = Bitmap.new(width, 24)
+      @command_name.x = $game_player.screen_x  - distance
+      @command_name.y = $game_player.screen_y + distance
+    end
+    #--------------------------------------------------------------------------
+    # * Update Command Selection
+    #--------------------------------------------------------------------------
+    def update_command_selection
+      if Input.trigger?(Input::B)
+        Sound.play_cancel
+        do_return
+      elsif Input.trigger?(Input::LEFT)
+        @command_ring.spin_left
+      elsif Input.trigger?(Input::RIGHT)
+        @command_ring.spin_right
+      elsif Input.trigger?(Input::C)
+        Sound.play_ok
+        prepare_next_scene
+      end
+    end
+    #--------------------------------------------------------------------------
+    # * Update Command Text
+    #--------------------------------------------------------------------------
+    def update_command_name
+      rect = @command_name.src_rect
+      command = RingMenu::Config::MENU_COMMAND[@command_ring.index]
+      bitmap = @command_name.bitmap
+      bitmap.clear
+      bitmap.draw_text(rect, command[:name], 1)
+    end
+    #--------------------------------------------------------------------------
+    # * Dispose Command Text
+    #--------------------------------------------------------------------------
+    def dispose_command_name
+      @command_name.dispose
+    end
+    #--------------------------------------------------------------------------
+    # * Prepare transition for new scene
+    #--------------------------------------------------------------------------
+    def prepare_next_scene
+      @index = @command_ring.index
+      command = RingMenu::Config::MENU_COMMAND[@command_ring.index]
+      @scene = command[:action].call
+      @prepare = command.fetch(:prepare) { |el| -> {} }
+      @command_ring.pre_terminate
+    end
+    #--------------------------------------------------------------------------
+    # * Execute transition to new scene
+    #--------------------------------------------------------------------------
+    def change_scene
+      if @scene == :none
+        SceneManager.return
+      else
+        SceneManager.call(@scene)
+        @prepare.call
+      end
+    end
+    #--------------------------------------------------------------------------
+    # * Load the next scene
+    #--------------------------------------------------------------------------
+    def do_return
+      @scene = :none
+      @command_ring.pre_terminate
+    end
+  end
+  #==============================================================================
+  # ** Scene_HeroMenu
+  #------------------------------------------------------------------------------
+  #  Dance like it hurts, Love like you need money, Work when people are watching.
+  #==============================================================================
+  class Scene_HeroMenu < Scene_RingMenu
+    #--------------------------------------------------------------------------
+    # * Initialize
+    #--------------------------------------------------------------------------
+    def prepare(scene)
+      raise "scene must be a Class object !" unless scene.is_a?(Class)
+      @scene = scene
+    end
+
+    private
+    #--------------------------------------------------------------------------
+    # * Create Command Ring
+    #--------------------------------------------------------------------------
+    def create_command_ring
+      icons = $game_party.members.map do |actor|
+        char = Game_Character.new
+        char.set_graphic(actor.character_name,actor.character_index)
+        Sprite_Character_Icon.new(@viewport, char)
+      end
+      x = $game_player.screen_x - 16
+      y = $game_player.screen_y - 16
+      distance = RingMenu::Config::DISTANCE
+      angle = RingMenu::Config::START_ANGLE
+      @command_ring = Spriteset_Iconring.new(x, y, distance, 10, angle, icons)
+    end
+    #--------------------------------------------------------------------------
+    # * Create Command Text
+    #--------------------------------------------------------------------------
+    def create_command_name
+      @command_name = Sprite.new
+      distance = RingMenu::Config::DISTANCE
+      width = distance * 2
+      @command_name.bitmap = Bitmap.new(width, 24)
+      @command_name.x = $game_player.screen_x  - distance
+      @command_name.y = $game_player.screen_y + distance
+    end
+    #--------------------------------------------------------------------------
+    # * Update Command Text
+    #--------------------------------------------------------------------------
+    def update_command_name
+      rect = @command_name.src_rect
+      hero = $game_party.members[@command_ring.index]
+      bitmap = @command_name.bitmap
+      bitmap.clear
+      bitmap.draw_text(rect, hero.name, 1)
+    end
+    #--------------------------------------------------------------------------
+    # * Load the next scene
+    #--------------------------------------------------------------------------
+    def prepare_next_scene
+      $game_party.menu_actor = $game_party.members[@command_ring.index]
+      @command_ring.pre_terminate
+    end
+    #--------------------------------------------------------------------------
+    # * Execute transition to new scene
+    #--------------------------------------------------------------------------
+    def change_scene
+      if @scene == :none
+        SceneManager.return
+      else
+        SceneManager.goto(@scene)
+      end
+    end
+  end
+  #==============================================================================
+  # ** Scene_HeroFormation
+  #------------------------------------------------------------------------------
+  #  For freedom.
+  #==============================================================================
+  class Scene_HeroFormation < Scene_MenuBase
+
+    def start
+      super
+      create_command_crescent
+      @chosing = false
+    end
+
+    def update
+      super
+      update_command_selection
+      @command_ring.update
+    end
+
+    private
+    def create_command_crescent
+      icons = $game_party.members.map do |actor|
+        char = Game_SChar.new
+        char.set_graphic(actor.character_name,actor.character_index)
+        Zangther::Sprite_Character_Icon.new(@viewport, char)
+      end
+      x = $game_player.screen_x
+      y = $game_player.screen_y
+      distance = Zangther::RingMenu::Config::DISTANCE
+      angle = Zangther::RingMenu::Config::START_ANGLE
+      @command_ring = Zangther::Spriteset_IconCrescent.new(x, y, icons)
+    end
+    #--------------------------------------------------------------------------
+    # * Update Command Selection
+    #--------------------------------------------------------------------------
+    def update_command_selection
+      if Input.trigger?(Input::B)
+        Sound.play_cancel
+        do_return
+      elsif Input.trigger?(Input::LEFT)
+        update_selection(:left)
+      elsif Input.trigger?(Input::RIGHT)
+        update_selection(:right)
+      elsif Input.trigger?(Input::C)
+        Sound.play_ok
+        if @chosing
+          @command_ring.unchose
+        else
+          @command_ring.chose
+        end
+        @chosing = !@chosing
+      end
+    end
+    #--------------------------------------------------------------------------
+    # * Load the next scene
+    #--------------------------------------------------------------------------
+    def do_return
+      SceneManager.return
+    end
+
+    private
+
+    def update_selection(direction)
+      if @chosing
+        if @command_ring.can_swap?(direction)
+          Sound.play_escape
+          @command_ring.swap(direction)
+          $game_party.swap_order(@command_ring.index,
+                                  @command_ring.pending_index)
+        else
+          Sound.play_buzzer
+        end
+      else
+        Sound.play_cursor
+        @command_ring.move(direction)
+      end
+    end
+  end
+end
 #==============================================================================
 # ** Scene_Map
 #------------------------------------------------------------------------------
