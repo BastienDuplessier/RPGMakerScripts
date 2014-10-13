@@ -103,7 +103,7 @@ module Zangther
   end
 
 
-  class Game_SChar < Game_Character
+  class Game_CharacterIcon < Game_Character
     def initialize
       super
       @move_speed = 1
@@ -843,7 +843,7 @@ module Zangther
     private
     def create_command_crescent
       icons = $game_party.members.map do |actor|
-        char = Game_SChar.new
+        char = Game_CharacterIcon.new
         char.set_graphic(actor.character_name,actor.character_index)
         Zangther::Sprite_Character_Icon.new(@viewport, char)
       end
