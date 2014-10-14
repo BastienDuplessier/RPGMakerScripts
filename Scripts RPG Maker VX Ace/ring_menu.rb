@@ -7,32 +7,35 @@
 #                  - Spriteset_Iconring
 #                  - Sprite_Icon
 #          - Configuration is in the module Zangther::RingMenu::Config
-#          - You can change fade_in and fade_out methods, they are into Zangther::RingMenu::Config::Fade
-#          - Some edits to Scene_Map, Scene_Item, Scene_File and Scene_End are made at the end of the file in
-#               order to make them compatible with this ring menu.
-#                     (#call_menu for Scene_Map and #return_scene for the others)
+#          - You can change fade_in and fade_out methods, they are into
+#              Zangther::RingMenu::Config::Fade
+#          - Some edits to Scene_Map, Scene_Item, Scene_File and Scene_End are
+#              made at the end of the file in order to make them compatible
+#              with this ring menu.
+#             (#call_menu for Scene_Map and #return_scene for the others)
 #------------------------------------------------------------------------------
-# Version : 1.1.3 by Zangther
+# Version : 1.1 by Zangther
 #     If any questions, contact me at zangther@gmail.com
-#-----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # Changelog :
+#     v 1.1   : Add Scene_HeroFormation
 #     v 1.0.1 : Cleaning
 #     v 1.0   : Base script
-#-----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 #       Special thanks to Raho, Nuki, S4suk3 and Grim from Funkywork
 #         for advises and constant support ! [ http://funkywork.jeun.fr ]
 #==============================================================================
 module Zangther
   module RingMenu
     module Config
-      # Menus's commands
+      # Menus' commands
       MENU_COMMAND = [
                       # {name: "Name", icon: ID, action: -> {Scene}, prepare: -> {SceneManager.scene.prepare(arguments)} }
                       {name: "Items", icon: 261, action: -> {Scene_Item}},
                       {name: "Skills", icon: 116, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Skill)} },
                       {name: "Equip", icon: 434, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Equip)} },
                       {name: "Status", icon: 121, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Status)} },
-                      {name: "Formation", icon: 121, action: -> {Scene_HeroFormation}},
+                      {name: "Formation", icon: 11, action: -> {Scene_HeroFormation}},
                       {name: "File", icon: 117, action: -> {Scene_Save}},
                       {name: "Exit", icon: 12, action: -> {Scene_End}}
                      ]
