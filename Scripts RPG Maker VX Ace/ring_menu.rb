@@ -27,21 +27,22 @@ module Zangther
     module Config
       # Menus's commands
       MENU_COMMAND = [
-      # {name: "Name", icon: ID, action: -> {Scene}, prepare: -> {SceneManager.scene.prepare(arguments)} }
-        {name: "Items", icon: 261, action: -> {Scene_Item}},
-        {name: "Skills", icon: 116, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Skill)} },
-        {name: "Equip", icon: 434, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Equip)} },
-        {name: "Status", icon: 121, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Status)} },
-        {name: "Formation", icon: 121, action: -> {Scene_HeroFormation}},
-        {name: "File", icon: 117, action: -> {Scene_Save}},
-        {name: "Exit", icon: 12, action: -> {Scene_End}}
-      ]
+                      # {name: "Name", icon: ID, action: -> {Scene}, prepare: -> {SceneManager.scene.prepare(arguments)} }
+                      {name: "Items", icon: 261, action: -> {Scene_Item}},
+                      {name: "Skills", icon: 116, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Skill)} },
+                      {name: "Equip", icon: 434, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Equip)} },
+                      {name: "Status", icon: 121, action: -> {Scene_HeroMenu}, prepare: -> {SceneManager.scene.prepare(Scene_Status)} },
+                      {name: "Formation", icon: 121, action: -> {Scene_HeroFormation}},
+                      {name: "File", icon: 117, action: -> {Scene_Save}},
+                      {name: "Exit", icon: 12, action: -> {Scene_End}}
+                     ]
 
       # Angle de base
       START_ANGLE = 1.5 * Math::PI
       # Distance
       DISTANCE = 50
     end
+
     #==============================================================================
     # ** Fade
     #------------------------------------------------------------------------------
@@ -73,6 +74,7 @@ module Zangther
         @state = :closing
       end
     end
+
     #==============================================================================
     # ** Icon
     #------------------------------------------------------------------------------
@@ -93,6 +95,7 @@ module Zangther
       end
     end
   end
+
   #==============================================================================
   # ** Sprite_Icon
   #------------------------------------------------------------------------------
@@ -102,29 +105,46 @@ module Zangther
     include RingMenu::Icon
   end
 
-
+  #==============================================================================
+  # ** Game_CharacterIcon
+  #------------------------------------------------------------------------------
+  #  Inherits from Game_Character, add some utility methods and changes
+  #    move_speed default value
+  #==============================================================================
   class Game_CharacterIcon < Game_Character
+    #--------------------------------------------------------------------------
+    # * Object Initialization
+    #--------------------------------------------------------------------------
     def initialize
       super
       @move_speed = 1
     end
-
+    #--------------------------------------------------------------------------
+    # * Stop movement
+    #--------------------------------------------------------------------------
     def stand_still
       @step_anime = false
-      @pattern = 1
+      straighten
     end
-
+    #--------------------------------------------------------------------------
+    # * Make walk
+    #--------------------------------------------------------------------------
     def walk
       @step_anime = true
     end
+
   end
 
   #==============================================================================
   # ** Sprite_Character_Icon
   #------------------------------------------------------------------------------
-  #  Just inherit from Sprite_Character and Icon, changes update to prevent placement issues
+  #  Just inherit from Sprite_Character and Icon, changes update to prevent
+  #    placement issues
   #==============================================================================
   class Sprite_Character_Icon < Sprite_Icon
+    #--------------------------------------------------------------------------
+    # * Public Instance Variables
+    #--------------------------------------------------------------------------
     attr_reader :character
     #--------------------------------------------------------------------------
     # * Object Initialization
@@ -137,7 +157,7 @@ module Zangther
       update
     end
     #--------------------------------------------------------------------------
-    # * Frame Update
+    # * Update
     #--------------------------------------------------------------------------
     def update
       super
@@ -192,6 +212,7 @@ module Zangther
       self.src_rect.set(sx, sy, @cw, @ch)
     end
   end
+
   #==============================================================================
   # ** Spriteset_Iconring
   #------------------------------------------------------------------------------
@@ -213,11 +234,16 @@ module Zangther
     attr_reader :actual_direction
     attr_reader :index
     #--------------------------------------------------------------------------
-    # * Public Instance Variables
+    # * Constants
     #--------------------------------------------------------------------------
     PI_2 = 6.28
     #--------------------------------------------------------------------------
-    # * Constructor
+    # * Object Initialization
+    #     x, y, distance, speed : int
+    #     angle : int (radians)
+    #     sprites : Enumeration of RingMenu::Icon
+    #     index : int
+    #     direction :  :trigo, :antitrigo, :+, :-, :positif, :negatif
     #--------------------------------------------------------------------------
     def initialize(x, y, distance, speed, angle, sprites, index = 0, direction=:trigo)
       # Argument test
@@ -244,7 +270,7 @@ module Zangther
     end
     #--------------------------------------------------------------------------
     # * Update
-    # need_refresh : force refresh
+    #  need_refresh : force refresh
     #--------------------------------------------------------------------------
     def update(need_refresh=false)
       return unless @icons
@@ -261,7 +287,7 @@ module Zangther
       refresh if need_refresh
     end
     #--------------------------------------------------------------------------
-    # * Dispose
+    # * Prepare terminate method
     #--------------------------------------------------------------------------
     def pre_terminate
       fade_out(0)
@@ -320,7 +346,7 @@ module Zangther
       @y = y.to_i
     end
     #--------------------------------------------------------------------------
-    # * Définir distance
+    # * Set angle
     #--------------------------------------------------------------------------
     def angle=(angle)
       if angle > PI_2 || angle < 0
@@ -339,7 +365,6 @@ module Zangther
         @step = step.to_f * @speed
       end
     end
-
     #--------------------------------------------------------------------------
     # * Spin right
     #--------------------------------------------------------------------------
@@ -348,7 +373,7 @@ module Zangther
       spin
     end
     #--------------------------------------------------------------------------
-    # * Spin right
+    # * Spin left
     #--------------------------------------------------------------------------
     def spin_left
       change_direction(:-)
@@ -422,7 +447,7 @@ module Zangther
         temp -= PI_2
       end
       @angle = temp
-      @shift[direction] = shift-@step
+      @shift[direction] = shift - @step
       @shift[direction] = 0 if @shift[direction] < 0
     end
     #--------------------------------------------------------------------------
@@ -492,19 +517,26 @@ module Zangther
     # * Make one complete spin
     #--------------------------------------------------------------------------
     def total_spin
-        @shift[@direction] += PI_2 unless spinning?
+      @shift[@direction] += PI_2 unless spinning?
     end
   end
+
   #==============================================================================
   # ** Spriteset_IconCrescent
   #------------------------------------------------------------------------------
   #  This class manages Sprite_Icon and place them as a crescent.
   #==============================================================================
   class Spriteset_IconCrescent
-
+    #--------------------------------------------------------------------------
+    # * Fade in
+    #--------------------------------------------------------------------------
     attr_reader :index
     attr_reader :pending_index
-
+    #--------------------------------------------------------------------------
+    # * Object Initialization
+    #     x, y : int
+    #     sprites : RingMenu::Icon array
+    #--------------------------------------------------------------------------
     def initialize(x, y, sprites)
       unless sprites.all? { |sp| (sp.is_a?(RingMenu::Icon)) }
         raise(ArgumentError, "sprite isn't an array of Sprite_Icons")
@@ -518,14 +550,18 @@ module Zangther
       select(0)
       update
     end
-
+    #--------------------------------------------------------------------------
+    # * Update
+    #--------------------------------------------------------------------------
     def update
       @sprites.each_with_index do |sprite, i|
         update_position(sprite, i)
         sprite.update
       end
     end
-
+    #--------------------------------------------------------------------------
+    # * Move
+    #--------------------------------------------------------------------------
     def move(direction)
       unselect
       case direction
@@ -536,7 +572,9 @@ module Zangther
       end
       select(@index)
     end
-
+    #--------------------------------------------------------------------------
+    # * Chose a char
+    #--------------------------------------------------------------------------
     def chose
       half = @sprites.size / 2
       if @index + 1 > half
@@ -545,11 +583,16 @@ module Zangther
         @sprites[@index].character.set_direction(6) # Face right
       end
     end
-
+    #--------------------------------------------------------------------------
+    # * Unchose a char
+    #--------------------------------------------------------------------------
     def unchose
       @sprites[@index].character.set_direction(2)
     end
-
+    #--------------------------------------------------------------------------
+    # * Can two swap ?
+    #     direction : :right, :left
+    #--------------------------------------------------------------------------
     def can_swap?(direction)
       case direction
       when :right
@@ -558,7 +601,10 @@ module Zangther
         can_swap_left?
       end
     end
-
+    #--------------------------------------------------------------------------
+    # * Swap
+    #     direction : :right, :left
+    #--------------------------------------------------------------------------
     def swap(direction)
       case direction
       when :right
@@ -572,49 +618,70 @@ module Zangther
     end
 
     private
-
+    #--------------------------------------------------------------------------
+    # * Can swap right
+    #--------------------------------------------------------------------------
     def can_swap_right?
       @index < @sprites.size - 1
     end
-
+    #--------------------------------------------------------------------------
+    # * Can swap left
+    #--------------------------------------------------------------------------
     def can_swap_left?
       @index != 0
     end
-
+    #--------------------------------------------------------------------------
+    # * Swap right
+    #--------------------------------------------------------------------------
     def swap_right
       animated_swap(@sprites[@index], @sprites[@index+1])
       @sprites[@index], @sprites[@index+1] = @sprites[@index+1], @sprites[@index]
       increment_index
     end
-
+    #--------------------------------------------------------------------------
+    # * Swap left
+    #--------------------------------------------------------------------------
     def swap_left
       animated_swap(@sprites[@index-1], @sprites[@index])
       @sprites[@index-1], @sprites[@index] = @sprites[@index], @sprites[@index-1]
       decrement_index
     end
-
+    #--------------------------------------------------------------------------
+    # * Animatte swap
+    #     (it's empty but you can fill it fellah)
+    #--------------------------------------------------------------------------
     def animated_swap(sprite_left, sprite_right)
     end
-
+    #--------------------------------------------------------------------------
+    # * Select char
+    #--------------------------------------------------------------------------
     def select(index)
       @sprites[index].character.walk
     end
-
+    #--------------------------------------------------------------------------
+    # * Unselect char
+    #--------------------------------------------------------------------------
     def unselect
       @sprites[@index].character.stand_still
     end
-
+    #--------------------------------------------------------------------------
+    # * Update position of a sprite
+    #--------------------------------------------------------------------------
     def update_position(sprite, i)
       angle_gap = Math::PI / @sprites.size
       start_angle = angle_gap / 2 + Math::PI
       angle = start_angle + (angle_gap * i)
       sprite.place(@x,@y,@distance,angle)
     end
-
+    #--------------------------------------------------------------------------
+    # * Increment index
+    #--------------------------------------------------------------------------
     def increment_index
       @index = (@index + 1) % @sprites.size
     end
-
+    #--------------------------------------------------------------------------
+    # * Decrement index
+    #--------------------------------------------------------------------------
     def decrement_index
       @index -= 1
       @index = 0 if @index == @sprites.size
@@ -634,7 +701,7 @@ module Zangther
     def start
       super
       create_background
-        create_command_ring
+      create_command_ring
       create_command_name
     end
     #--------------------------------------------------------------------------
@@ -752,6 +819,7 @@ module Zangther
       @command_ring.pre_terminate
     end
   end
+
   #==============================================================================
   # ** Scene_HeroMenu
   #------------------------------------------------------------------------------
@@ -824,16 +892,20 @@ module Zangther
   #==============================================================================
   # ** Scene_HeroFormation
   #------------------------------------------------------------------------------
-  #  For freedom.
+  #  A ring menu to handle formation issues.
   #==============================================================================
   class Scene_HeroFormation < Scene_MenuBase
-
+    #--------------------------------------------------------------------------
+    # * Start
+    #--------------------------------------------------------------------------
     def start
       super
       create_command_crescent
       @chosing = false
     end
-
+    #--------------------------------------------------------------------------
+    # * Update
+    #--------------------------------------------------------------------------
     def update
       super
       update_command_selection
@@ -841,6 +913,9 @@ module Zangther
     end
 
     private
+    #--------------------------------------------------------------------------
+    # * Create command crescent
+    #--------------------------------------------------------------------------
     def create_command_crescent
       icons = $game_party.members.map do |actor|
         char = Game_CharacterIcon.new
@@ -882,14 +957,16 @@ module Zangther
     end
 
     private
-
+    #--------------------------------------------------------------------------
+    # * Fade in
+    #--------------------------------------------------------------------------
     def update_selection(direction)
       if @chosing
         if @command_ring.can_swap?(direction)
           Sound.play_escape
           @command_ring.swap(direction)
           $game_party.swap_order(@command_ring.index,
-                                  @command_ring.pending_index)
+                                 @command_ring.pending_index)
         else
           Sound.play_buzzer
         end
@@ -900,12 +977,12 @@ module Zangther
     end
   end
 end
+
 #==============================================================================
 # ** Scene_Map
 #------------------------------------------------------------------------------
 #  This class performs the map screen processing.
 #==============================================================================
-
 class Scene_Map < Scene_Base
   #--------------------------------------------------------------------------
   # * Call Menu Screen
