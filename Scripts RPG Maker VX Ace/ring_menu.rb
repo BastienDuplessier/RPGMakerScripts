@@ -14,10 +14,11 @@
 #              with this ring menu.
 #             (#call_menu for Scene_Map and #return_scene for the others)
 #------------------------------------------------------------------------------
-# Version : 1.1 by Zangther
+# Version : 1.2 by Zangther
 #     If any questions, contact me at zangther@gmail.com
 #------------------------------------------------------------------------------
 # Changelog :
+#     v 1.2   : Make non selected icon grayish
 #     v 1.1   : Add Scene_HeroFormation
 #     v 1.0.1 : Cleaning
 #     v 1.0   : Base script
@@ -310,6 +311,7 @@ module Zangther
         angle = @angle + ((PI_2/(@icons.size))*i)
         icon.place(@x,@y,@distance,angle)
         icon.opacity = @opacity
+        icon.tone.gray = (i == @index) ? 0 : 255
         icon.update
       end
     end
