@@ -2042,4 +2042,4 @@ if $TEST
       $scene = EventPrinter::Scene.new
     end
   end
-endy
+end
