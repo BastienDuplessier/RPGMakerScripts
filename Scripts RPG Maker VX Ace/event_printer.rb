@@ -1,6 +1,8 @@
 #==============================================================================
 #  Event Printer - RPG Maker VXace
 #------------------------------------------------------------------------------
+#  Version 1.3.1 - 06/05/2015
+#      - Add class 'event_code' to HTML and BBcode outputs
 #  Version 1.3 - 04/11/2013
 #      - Bugfix on conditions variable - variable. Second variable wasn't the good one
 #  Version 1.2 - 18/05/2013
