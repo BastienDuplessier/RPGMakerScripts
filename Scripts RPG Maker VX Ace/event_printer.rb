@@ -1436,7 +1436,7 @@ if $TEST
       # ** Head
       #--------------------------------------------------------------------------
       def head(string_name = "foo")
-        sprintf("[table style='background-color:%s;border:1px solid; padding: 5px;text-shadow:none']%s", 
+        sprintf("[table style='background-color:%s;border:1px solid; padding: 5px;text-shadow:none' class='event_code']%s", 
           EventPrinter::Theme::Nothing, name(string_name))
       end
       #--------------------------------------------------------------------------
@@ -1476,7 +1476,7 @@ if $TEST
       # ** Head
       #--------------------------------------------------------------------------
       def head(string_name = "foo")
-        sprintf("%s<div style='background-color:%s; border: #94a4be 1px solid; padding: 5px;text-shadow:none>",
+        sprintf("%s<div style='background-color:%s; border: #94a4be 1px solid; padding: 5px;text-shadow:none class='event_code'>",
           name(string_name), EventPrinter::Theme::Nothing)
       end
       #--------------------------------------------------------------------------
